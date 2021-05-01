@@ -27,10 +27,11 @@ struct ContentView: View {
     let path8 = "file:///Users/anthonylim/Downloads/M66-ID10979-OC144423-GR4135-LUM2.fit"
     let path9 = "file:///Users/anthonylim/Downloads/NGC6960-ID14567-OC148925-GR8123-LUM.fit"
     let histogramcount = 1024
+    @State var called = 0
     
     func read() -> ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat){
         var threeData: ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)?
-        var path = URL(string: path3)!
+        var path = URL(string: path7)!
         var read_data = try! FitsFile.read(contentsOf: path)
         let prime = read_data?.prime
         print(prime)
@@ -42,7 +43,7 @@ struct ContentView: View {
         return threeData!
     }
     func read2() -> PrimaryHDU{
-        var path = URL(string: path3)!
+        var path = URL(string: path7)!
         var read_data = try! FitsFile.read(contentsOf: path)
         let prime = read_data!.prime
         return prime
@@ -193,15 +194,51 @@ struct ContentView: View {
                         }
         print(histogramBin3)
         vImageHistogramSpecification_PlanarF(&buffer, &buffer2, nil, histogramBin3, UInt32(histogramcount), 0.0, 1.0, vImage_Flags(kvImageNoFlags))
-/*
-        let pointerRet = UnsafeRawPointer(buffer3.data) //(UnsafeMutableRawPoint?)
-       // let floatpointer = UnsafeRawPointer(pointerRet)
-                                  //.bindMemory(to: UInt64.self, capacity: 1)
-        let firstByte = pointerRet!.load(as: <Float.self>)
-        for i in 0 ..< 6 {
-            print(pointerRet[i])
+        
+        var PixelData = (buffer3.data.toArray(to: Float.self, capacity: Int(buffer3.width*buffer3.height)))
+        
+        print(PixelData.max()!)
+        print(PixelData.min()!)
+        
+        let myMin:Float = 0.0
+        var blackLevel:Float = 0.0
+        
+        if(PixelData.min()! > myMin.ulp  ){
+        
+            blackLevel = PixelData.min()! * 0.75
         }
- */
+        else{
+            
+            blackLevel = 0.1
+        }
+        
+        for i in 0..<PixelData.count{
+            
+            PixelData[i] -= blackLevel
+            
+        }
+        
+        print(PixelData.min()!)
+        
+        let pixelDataAsData = Data(fromArray: PixelData)
+        
+        let cfdata = NSData(data: pixelDataAsData) as CFData
+        
+        let provider = CGDataProvider(data: cfdata)!
+        
+        let width :Int = Int(buffer3.width)
+        let height: Int = Int(buffer3.height)
+        let rowBytes :Int = width*4
+        
+        let bitmapInfo: CGBitmapInfo = [
+            .byteOrder32Little,
+            .floatComponents]
+              
+        let pixelCGImage = CGImage(width:  width, height: height, bitsPerComponent: 32, bitsPerPixel: 32, bytesPerRow: rowBytes, space: CGColorSpaceCreateDeviceGray(), bitmapInfo: bitmapInfo, provider: provider, decode: nil, shouldInterpolate: false, intent: .defaultIntent)
+        
+
+        
+        
  
  //let rETdata = Data(bytes: raw, count: Int(buffer3.width * buffer3.height))
         //var dataAvg = Float(0)
@@ -226,12 +263,22 @@ struct ContentView: View {
  */
 
  let result2 = (try? buffer3.createCGImage(format: format))!
+        
+        
+        print("called")
+        
+        
 
         
         //let image = Image(result2!, scale: 1.0, label: Text("Image"))
-
-        return (result2, histogramBin2)
+       // return (result2, histogramBin2)
+        
+        return( pixelCGImage!, histogramBin2)
     }
+    
+    
+    
+    
     func histogram () -> [vImagePixelCount]{
         var originalhistogram = display().1
         return originalhistogram
@@ -239,11 +286,13 @@ struct ContentView: View {
 
     var body: some View {
             VStack {
-                HSplitView{
-                Image(decorative: display().0, scale: 1.0)
-                    .resizable()
-                    .scaledToFit()
-                    .padding()
+                ScrollView([.horizontal, .vertical]){
+                    HSplitView{
+                    Image(decorative: display().0, scale: 1.0)
+                        //.resizable()
+                       // .scaledToFit()
+                        .padding()
+                    }
                 }
                 HStack{
                     Spacer()
@@ -260,3 +309,23 @@ struct ContentView: View {
     
 
 
+extension UnsafeMutableRawPointer {
+    func toArray<T>(to type: T.Type, capacity count: Int) -> [T]{
+        let pointer = bindMemory(to: type, capacity: count)
+        return Array(UnsafeBufferPointer(start: pointer, count: count))
+    }
+}
+
+
+extension Data {
+
+    init<T>(fromArray values: [T]) {
+        self = values.withUnsafeBytes { Data($0) }
+    }
+
+    func toArray<T>(type: T.Type) -> [T] where T: ExpressibleByIntegerLiteral {
+        var array = Array<T>(repeating: 0, count: self.count/MemoryLayout<T>.stride)
+        _ = array.withUnsafeMutableBytes { copyBytes(to: $0) }
+        return array
+    }
+}
