@@ -48,7 +48,7 @@ struct ContentView: View {
         let prime = read_data!.prime
         return prime
     }
-    func display() -> (CGImage, [vImagePixelCount]){
+    func display() -> (CGImage, [vImagePixelCount], CGImage){
         let threedata = read()
         var data = threedata.0
         //target data
@@ -61,8 +61,6 @@ struct ContentView: View {
         //destination buffer
         var buffer2 = buffer
         var buffer4 = buffer
-        var buffer5 = buffer
-
         var dataMin = data.min()// data type FITSByte_F
         //var dataAvg = data.mean
         
@@ -80,7 +78,7 @@ struct ContentView: View {
                                 fatalError("Error calculating histogram: \(error)")
                             }
                         }
-
+        print(histogramBin)
         var histogram_optimized = histogramBin
         var histogramMean = histogramBin.mean
         var histogramStdev = histogramBin.stdev
@@ -138,7 +136,7 @@ struct ContentView: View {
         //var buffer3 = buffer2
         //vImageEqualization_PlanarF(&buffer2, &buffer3, nil, histogramcount, lowerPixelLimt, upperPixelLimit, vImage_Flags(kvImageNoFlags))
         //vImageContrastStretch_PlanarF(&buffer2, &buffer3, nil, histogramcount, lowerPixelLimt, upperPixelLimit, vImage_Flags(kvImageNoFlags))
-        let gamma: Float = 0.8
+        let gamma: Float = 1.0
         let exponential:[Float] = [1, 0, 0]
     
         var buffer3 = buffer
@@ -162,8 +160,8 @@ struct ContentView: View {
         let kernelheight = 3
         var kernelArray = [Float]()
         var A : Float = 1.0
-        var simgaX: Float = 0.80
-        var sigmaY: Float = 0.80
+        var simgaX: Float = 0.75
+        var sigmaY: Float = 0.75
         //var Volume = 2.0 * Float.pi * A * simgaX * sigmaY
         for i in 0 ..< kernelwidth{
             let xposition = Float(i - kernelwidth / 2)
@@ -182,7 +180,7 @@ struct ContentView: View {
         print(kernelArray, " " , kernelArray.max())
         print(buffer2)
         print(buffer3)
-        vImageConvolve_PlanarF(&buffer2, &buffer3, nil, 0, 0, &kernelArray, UInt32(kernelwidth), UInt32(kernelheight), 0, vImage_Flags(kvImageEdgeExtend))
+        vImageConvolve_PlanarF(&buffer, &buffer3, nil, 0, 0, &kernelArray, UInt32(kernelwidth), UInt32(kernelheight), 0, vImage_Flags(kvImageEdgeExtend))
         var histogramBin3 = [vImagePixelCount](repeating: 0, count: histogramcount)
         let histogramBinPtr3 = UnsafeMutablePointer<vImagePixelCount>(mutating: histogramBin3)
         histogramBin3.withUnsafeMutableBufferPointer() { Ptr in
@@ -196,7 +194,8 @@ struct ContentView: View {
         vImageHistogramSpecification_PlanarF(&buffer, &buffer2, nil, histogramBin3, UInt32(histogramcount), 0.0, 1.0, vImage_Flags(kvImageNoFlags))
         
         var PixelData = (buffer3.data.toArray(to: Float.self, capacity: Int(buffer3.width*buffer3.height)))
-        
+        var OriginalPixelData = (buffer.data.toArray(to: Float.self, capacity: Int(buffer.width*buffer.height)))
+
         print(PixelData.max()!)
         print(PixelData.min()!)
         
@@ -219,8 +218,32 @@ struct ContentView: View {
         }
         
         print(PixelData.min()!)
+        print(PixelData.max()!)
+        let averagePixelData = PixelData.mean
+        var bendValue = Float(0.0)
+        print(averagePixelData)
         
-        let pixelDataAsData = Data(fromArray: PixelData)
+               if averagePixelData * 2.0 > 1.0 {
+                   bendValue = (1.0 - averagePixelData)/2 + averagePixelData
+               }
+               else
+               {
+                   bendValue = 1.5 * averagePixelData
+               }
+        print(bendValue)
+        for i in 0 ..< PixelData.count{
+            OriginalPixelData[i] = averagePixelData * ((OriginalPixelData[i]/(PixelData[i] + bendValue)))
+        }
+        var OriginalMax = Float(OriginalPixelData.max()!)
+        var OriginalMin = Float(OriginalPixelData.min()!)
+        var adjustable = OriginalMax - OriginalMin
+        for i in 0 ..< OriginalPixelData.count{
+            OriginalPixelData[i] = (OriginalPixelData[i] - OriginalMin) / adjustable
+        }
+        print(OriginalPixelData.min()!)
+        print(OriginalPixelData.max()!)
+        //let pixelDataAsData = Data(fromArray: PixelData)
+        let pixelDataAsData = Data(fromArray: OriginalPixelData)
         
         let cfdata = NSData(data: pixelDataAsData) as CFData
         
@@ -236,44 +259,12 @@ struct ContentView: View {
               
         let pixelCGImage = CGImage(width:  width, height: height, bitsPerComponent: 32, bitsPerPixel: 32, bytesPerRow: rowBytes, space: CGColorSpaceCreateDeviceGray(), bitmapInfo: bitmapInfo, provider: provider, decode: nil, shouldInterpolate: false, intent: .defaultIntent)
         
-
-        
-        
- 
- //let rETdata = Data(bytes: raw, count: Int(buffer3.width * buffer3.height))
-        //var dataAvg = Float(0)
-        //var count2 = rETdata.count
-        /*for i in 0 ..< count2 {
-            dataAvg += retdata[i]
-        }
-        print(dataAvg)
-        
-        var bendValue = Float(0.0)
-        
-        if dataAvg * 2.0 > 1.0 {
-            bendValue = (1.0 - dataAvg)/2 + dataAvg
-        }
-        else
-        {
-            bendValue = 1.5 * dataAvg
-        }
-        for i in 0 ..< retdata.count{
-            retdata[i] = (dataAvg * (retdata[i] / (data[i] + bendValue)) + 100.0 / 65535.0) * 10.0
-        }
- */
-
- let result2 = (try? buffer3.createCGImage(format: format))!
-        
+        let originalImage = (try? buffer.createCGImage(format: format))!
+    
         
         print("called")
         
-        
-
-        
-        //let image = Image(result2!, scale: 1.0, label: Text("Image"))
-       // return (result2, histogramBin2)
-        
-        return( pixelCGImage!, histogramBin2)
+        return( pixelCGImage!, histogramBin2, originalImage)
     }
     
     
@@ -289,9 +280,10 @@ struct ContentView: View {
                 ScrollView([.horizontal, .vertical]){
                     HSplitView{
                     Image(decorative: display().0, scale: 1.0)
-                        //.resizable()
-                       // .scaledToFit()
                         .padding()
+                    }
+                    HSplitView{
+                        Image(decorative: display().2, scale: 1.0)
                     }
                 }
                 HStack{
