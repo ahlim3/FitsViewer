@@ -11,6 +11,7 @@ import FITSKit
 import Accelerate
 import Accelerate.vImage
 import Combine
+import CoreGraphics
 
 struct ContentView: View {
 
@@ -26,12 +27,13 @@ struct ContentView: View {
     let path7 = "file:///Users/anthonylim/Downloads/NGC4438-104275-LUM.fit"
     let path8 = "file:///Users/anthonylim/Downloads/M66-ID10979-OC144423-GR4135-LUM2.fit"
     let path9 = "file:///Users/anthonylim/Downloads/NGC6960-ID14567-OC148925-GR8123-LUM.fit"
+    let path10 = "file:///Users/anthonylim/Downloads/globular.fits"
     let histogramcount = 1024
     @State var called = 0
     
     func read() -> ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat){
         var threeData: ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)?
-        var path = URL(string: path7)!
+        var path = URL(string: path2)!
         var read_data = try! FitsFile.read(contentsOf: path)
         let prime = read_data?.prime
         print(prime)
@@ -43,7 +45,7 @@ struct ContentView: View {
         return threeData!
     }
     func read2() -> PrimaryHDU{
-        var path = URL(string: path7)!
+        var path = URL(string: path5)!
         var read_data = try! FitsFile.read(contentsOf: path)
         let prime = read_data!.prime
         return prime
@@ -156,30 +158,16 @@ struct ContentView: View {
         /*for i in 0 ..< kernel2D.count{
             kernel2D[i] = kernel2D[i] / kernel
         }*/
-        let kernelwidth = 3
-        let kernelheight = 3
-        var kernelArray = [Float]()
+        let kernelwidth = 7
+        let kernelheight = 7
         var A : Float = 1.0
         var simgaX: Float = 0.75
         var sigmaY: Float = 0.75
-        //var Volume = 2.0 * Float.pi * A * simgaX * sigmaY
-        for i in 0 ..< kernelwidth{
-            let xposition = Float(i - kernelwidth / 2)
-            for j in 0 ..< kernelheight{
-            let yposition = Float(j - kernelheight / 2)
-                var xponent = -xposition * xposition / (Float(2.0) * simgaX * simgaX)
-                var yponent = -yposition * yposition / (Float(2.0) * sigmaY * sigmaY)
-                let answer = A * exp (xponent + yponent)
-                kernelArray.append(answer)
-            }
-        }
-        var sum = kernelArray.reduce(0, +)
-        for i in 0 ..< kernelArray.count{
-            kernelArray[i] = kernelArray[i] / sum
-        }
+        
+        var kernelArray = kArray(width: kernelwidth, height: kernelheight, sigmaX: simgaX, sigmaY: sigmaY, A: A)
+        
         print(kernelArray, " " , kernelArray.max())
-        print(buffer2)
-        print(buffer3)
+
         vImageConvolve_PlanarF(&buffer, &buffer3, nil, 0, 0, &kernelArray, UInt32(kernelwidth), UInt32(kernelheight), 0, vImage_Flags(kvImageEdgeExtend))
         var histogramBin3 = [vImagePixelCount](repeating: 0, count: histogramcount)
         let histogramBinPtr3 = UnsafeMutablePointer<vImagePixelCount>(mutating: histogramBin3)
@@ -192,59 +180,14 @@ struct ContentView: View {
                         }
         print(histogramBin3)
         vImageHistogramSpecification_PlanarF(&buffer, &buffer2, nil, histogramBin3, UInt32(histogramcount), 0.0, 1.0, vImage_Flags(kvImageNoFlags))
-        
-        var PixelData = (buffer3.data.toArray(to: Float.self, capacity: Int(buffer3.width*buffer3.height)))
+    
+        var BlurredPixelData = (buffer3.data.toArray(to: Float.self, capacity: Int(buffer3.width*buffer3.height)))
         var OriginalPixelData = (buffer.data.toArray(to: Float.self, capacity: Int(buffer.width*buffer.height)))
+        var bendvalue = bendValue(AdjustedData: BlurredPixelData) //return bendvalue as .0, and averagepixeldata as .1
+        var ddpPixelData = ddpProcessed(OriginalPixelData: OriginalPixelData, BlurredPixeldata: BlurredPixelData, Bendvalue: bendvalue.0, AveragePixel: bendvalue.1)
+        let ddpScaled = ddpScaled(ddpPixelData: ddpPixelData)
 
-        print(PixelData.max()!)
-        print(PixelData.min()!)
-        
-        let myMin:Float = 0.0
-        var blackLevel:Float = 0.0
-        
-        if(PixelData.min()! > myMin.ulp  ){
-        
-            blackLevel = PixelData.min()! * 0.75
-        }
-        else{
-            
-            blackLevel = 0.1
-        }
-        
-        for i in 0..<PixelData.count{
-            
-            PixelData[i] -= blackLevel
-            
-        }
-        
-        print(PixelData.min()!)
-        print(PixelData.max()!)
-        let averagePixelData = PixelData.mean
-        var bendValue = Float(0.0)
-        print(averagePixelData)
-        
-               if averagePixelData * 2.0 > 1.0 {
-                   bendValue = (1.0 - averagePixelData)/2 + averagePixelData
-               }
-               else
-               {
-                   bendValue = 1.5 * averagePixelData
-               }
-        print(bendValue)
-        for i in 0 ..< PixelData.count{
-            OriginalPixelData[i] = averagePixelData * ((OriginalPixelData[i]/(PixelData[i] + bendValue)))
-        }
-        var OriginalMax = Float(OriginalPixelData.max()!)
-        var OriginalMin = Float(OriginalPixelData.min()!)
-        var adjustable = OriginalMax - OriginalMin
-        for i in 0 ..< OriginalPixelData.count{
-            OriginalPixelData[i] = (OriginalPixelData[i] - OriginalMin) / adjustable
-        }
-        print(OriginalPixelData.min()!)
-        print(OriginalPixelData.max()!)
-        //let pixelDataAsData = Data(fromArray: PixelData)
-        let pixelDataAsData = Data(fromArray: OriginalPixelData)
-        
+        let pixelDataAsData = Data(fromArray: ddpScaled)
         let cfdata = NSData(data: pixelDataAsData) as CFData
         
         let provider = CGDataProvider(data: cfdata)!
@@ -270,28 +213,35 @@ struct ContentView: View {
     
     
     
-    func histogram () -> [vImagePixelCount]{
-        var originalhistogram = display().1
-        return originalhistogram
+    func invert(image : CGImage) {
+        Image(decorative: image, scale: 1.0)
+    }
+    func imageView(image: CGImage) -> Image
+    {
+        Image(decorative: image, scale: 1.0)
     }
 
     var body: some View {
+        let modified = display()
             VStack {
                 ScrollView([.horizontal, .vertical]){
+
                     HSplitView{
-                    Image(decorative: display().0, scale: 1.0)
-                        .padding()
+                        Image(decorative: modified.0, scale: 1.0)
                     }
                     HSplitView{
-                        Image(decorative: display().2, scale: 1.0)
+                        Image(decorative: modified.2, scale: 1.0)
                     }
                 }
                 HStack{
                     Spacer()
+                    
+                    Button("Inverted Optimized", action: {invert(image: modified.0)})
+                    Button("Optimized", action: {imageView(image: modified.0)})
+                    Button("Original", action: {imageView(image: modified.2)})
+                    
 
-                    Button("Invert", action: {histogram().self})
-                    Button("Zero", action: {histogram().self})
-                    Button("Reset", action: {histogram().self})
+                    
                 }
             }
 
@@ -301,23 +251,4 @@ struct ContentView: View {
     
 
 
-extension UnsafeMutableRawPointer {
-    func toArray<T>(to type: T.Type, capacity count: Int) -> [T]{
-        let pointer = bindMemory(to: type, capacity: count)
-        return Array(UnsafeBufferPointer(start: pointer, count: count))
-    }
-}
 
-
-extension Data {
-
-    init<T>(fromArray values: [T]) {
-        self = values.withUnsafeBytes { Data($0) }
-    }
-
-    func toArray<T>(type: T.Type) -> [T] where T: ExpressibleByIntegerLiteral {
-        var array = Array<T>(repeating: 0, count: self.count/MemoryLayout<T>.stride)
-        _ = array.withUnsafeMutableBytes { copyBytes(to: $0) }
-        return array
-    }
-}
