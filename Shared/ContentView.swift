@@ -206,17 +206,17 @@ struct ContentView: View {
                         NavigationLink(
                             destination: DestinationPageView1()
                         ) {
-                            Text("Image 2")
+                            Text("Image 2 Representable")
                         }
                         NavigationLink(
                             destination: DestinationPageView2()
                         ) {
-                            Text("Image 3")
+                            Text("Image 3 Fast")
                         }
                         NavigationLink(
                             destination: DestinationPageView3()
                         ) {
-                            Text("Image 4")
+                            Text("Image 4 Fast, Representable")
                         }
                         NavigationLink(
                             destination: DestinationPageView4()
@@ -226,12 +226,12 @@ struct ContentView: View {
                         NavigationLink(
                             destination: DestinationPageView5()
                         ) {
-                            Text("Image 6")
+                            Text("Image 6 Representable")
                         }
                         NavigationLink(
                             destination: DestinationPageView6()
                         ) {
-                            Text("Image 7")
+                            Text("Image 7 Moon, Representable, Slow")
                         }
                         NavigationLink(
                             destination: DestinationPageView7()
