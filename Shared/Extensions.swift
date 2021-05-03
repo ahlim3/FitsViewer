@@ -88,24 +88,22 @@ func bendValue(AdjustedData: [Float], lowerPixelLimit: Pixel_F) -> (Float, Float
 }
 
 func ddpProcessed(OriginalPixelData: [Float], BlurredPixeldata: [Float], Bendvalue : Float, AveragePixel: Float, cutOff: Int, MinPixel : Pixel_F) -> [Float]{
-    var OriginalPixelData = OriginalPixelData
-    var ddpPixeldata = OriginalPixelData
+    var ddpPixeldata = [Float]()
         for i in 0 ..< OriginalPixelData.count{
-        ddpPixeldata[i] = AveragePixel * ((OriginalPixelData[i]/(BlurredPixeldata[i] + Bendvalue)))
+        let answer = AveragePixel * ((OriginalPixelData[i]/(BlurredPixeldata[i] + Bendvalue)))
+            ddpPixeldata.append(answer)
         }
-    var temp = (ddpPixeldata.max(), ddpPixeldata.min())
-    print(temp)
     return ddpPixeldata
 }
 func ddpScaled(ddpPixelData: [Float], MinPixel : Pixel_F) -> [Float]{
-    var ddpScaled = ddpPixelData
-    var ddpMax = Float(ddpScaled.max()!)
-    var ddpMin = Float(ddpScaled.min()!)
+    var ddpScaled = [Float]()
+    var ddpMax = Float(ddpPixelData.max()!)
+    var ddpMin = Float(ddpPixelData.min()!)
     var adjustable = ddpMax - ddpMin
-    for i in 0 ..< ddpScaled.count{
-        ddpScaled[i] = (ddpScaled[i] - ddpMin) / adjustable
+    for i in 0 ..< ddpPixelData.count{
+        let answer = (ddpPixelData[i] - ddpMin) / adjustable
+        ddpScaled.append(answer)
     }
-    print(ddpScaled.max(), ddpScaled.min())
     return ddpScaled
 }
 func histogram(dataMaxPixel: Pixel_F, dataMinPixel: Pixel_F, buffer : vImage_Buffer, histogramcount: Int) -> [vImagePixelCount]{
@@ -123,15 +121,11 @@ func histogram(dataMaxPixel: Pixel_F, dataMinPixel: Pixel_F, buffer : vImage_Buf
     return histogramBin
 }
 
-func returningCGImage(data: [Float], buffer: vImage_Buffer) -> CGImage{
+func returningCGImage(data: [Float], width: Int, height: Int, rowBytes: Int) -> CGImage{
     let pixelDataAsData = Data(fromArray: data)
     let cfdata = NSData(data: pixelDataAsData) as CFData
     
     let provider = CGDataProvider(data: cfdata)!
-    
-    let width :Int = Int(buffer.width)
-    let height: Int = Int(buffer.height)
-    let rowBytes :Int = width*4
     
     let bitmapInfo: CGBitmapInfo = [
         .byteOrder32Little,
@@ -141,17 +135,13 @@ func returningCGImage(data: [Float], buffer: vImage_Buffer) -> CGImage{
     return pixelCGImage
 }
 
-func optimizedHist(histogram_in : [vImagePixelCount], histogramcount : Int) -> ([vImagePixelCount], Pixel_F, Pixel_F, Int){
-    var optimizedHist = histogram_in
+func OptValue(histogram_in : [vImagePixelCount], histogramcount : Int) -> (Pixel_F, Pixel_F, Int){
     var MaxPixel = 0
     var MinPixel = 0
-    var limit = Int(Double(histogramcount) * 0.015)
-    var PixelLimitingCount = Int(Double(optimizedHist.reduce(0,+)) * 0.005)
-    var PixelLimitingCountUpper = Int(Double(PixelLimitingCount) * 0.01)
-    var comparableValue = 0
+    let PixelLimitingCount = Int(Double(histogram_in.reduce(0,+)) * 0.005)
     var minimumCutoff = 1
     for i in 0 ..< histogramcount {
-        if optimizedHist[i] > PixelLimitingCount{
+        if histogram_in[i] > PixelLimitingCount{
             MinPixel = i
             break
         }
@@ -165,7 +155,7 @@ func optimizedHist(histogram_in : [vImagePixelCount], histogramcount : Int) -> (
     }
     
     for i in 0 ..< histogramcount{
-        if optimizedHist[i] > 10{
+        if histogram_in[i] > 10{
             MaxPixel = i
         }
         
@@ -174,9 +164,9 @@ func optimizedHist(histogram_in : [vImagePixelCount], histogramcount : Int) -> (
     if difference < 30 {
         MaxPixel = MinPixel + Int(Double(histogramcount) * 0.1)
     }
-    var MaxPixel_F = Pixel_F(Float(MaxPixel) / Float(histogramcount))
-    var MinPixel_F = Pixel_F(Float(MinPixel) / Float(histogramcount))
-    return (optimizedHist, MaxPixel_F, MinPixel_F, minimumCutoff)
+    let MaxPixel_F = Pixel_F(Float(MaxPixel) / Float(histogramcount))
+    let MinPixel_F = Pixel_F(Float(MinPixel) / Float(histogramcount))
+    return (MaxPixel_F, MinPixel_F, minimumCutoff)
 }
 func forcingMeanData(PixelData : [Float], MinimumLimit: Float) -> [Float]{
     var PixelData = PixelData
@@ -205,53 +195,51 @@ func read(Path: String) -> ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat){
 func display(Path: String) -> ([vImagePixelCount], CGImage, CGImage){
     let threedata = read(Path: Path)
     //target data
-    var data = threedata.0
+    let data = threedata.0
     //Buffer from FITS File
-    var buffer = threedata.1
+    let buffer = threedata.1
     //Grayscale format from FITS file
     let format = threedata.2
     //destination buffer
-    var buffer2 = buffer
-    var buffer4 = buffer
+    let width :Int = Int(buffer.width)
+    let height: Int = Int(buffer.height)
+    let rowBytes :Int = width*4
     let histogramcount = 1024
     let dataMaxPixel = Pixel_F(data.max()!)
     let dataMinPixel = Pixel_F(data.min()!)
-    var histogramBin = histogram(dataMaxPixel: dataMaxPixel, dataMinPixel: dataMinPixel, buffer: buffer, histogramcount: histogramcount)
+    let histogramBin = histogram(dataMaxPixel: dataMaxPixel, dataMinPixel: dataMinPixel, buffer: buffer, histogramcount: histogramcount)
     //Return three data, Histogram(0), Maximum Pixel Value(1), Minimum Pixel Value(2), Cutoff?(3) = 0 no, 1 yes
-    var OptimizedHistogramContents = optimizedHist(histogram_in: histogramBin, histogramcount: histogramcount)
-    let lowerPixelLimit = OptimizedHistogramContents.2
-    let upperPixelLimit = OptimizedHistogramContents.1
-    let cutoff = OptimizedHistogramContents.3
-    var histogramOpt = histogram(dataMaxPixel: upperPixelLimit, dataMinPixel: lowerPixelLimit, buffer: buffer, histogramcount: histogramcount)
+    let OptimizedHistogramContents = OptValue(histogram_in: histogramBin, histogramcount: histogramcount)
+    let lowerPixelLimit = OptimizedHistogramContents.1
+    let upperPixelLimit = OptimizedHistogramContents.0
+    let cutoff = OptimizedHistogramContents.2
+    let histogramOpt = histogram(dataMaxPixel: upperPixelLimit, dataMinPixel: lowerPixelLimit, buffer: buffer, histogramcount: histogramcount)
     print(histogramOpt)
     var OriginalPixelData = (buffer.data.toArray(to: Float.self, capacity: Int(buffer.width*buffer.height)))
     OriginalPixelData = forcingMeanData(PixelData: OriginalPixelData, MinimumLimit: lowerPixelLimit)
-    let forcedOriginalData = returningCGImage(data: OriginalPixelData, buffer: buffer)
+    let forcedOriginalData = returningCGImage(data: OriginalPixelData, width: width, height: height, rowBytes: rowBytes)
     var forcedbuffer = try! vImage_Buffer(cgImage: forcedOriginalData, format: format)
     var buffer3 = buffer
-    let kernelwidth = 7
-    let kernelheight = 7
+    var kernelwidth = 9
+    var kernelheight = 9
     var A : Float = 1.0
     var simgaX: Float = 0.75
     var sigmaY: Float = 0.75
     
     var kernelArray = kArray(width: kernelwidth, height: kernelheight, sigmaX: simgaX, sigmaY: sigmaY, A: A)
-    
-    print(kernelArray, " " , kernelArray.max())
     vImageConvolve_PlanarF(&forcedbuffer, &buffer3, nil, 0, 0, &kernelArray, UInt32(kernelwidth), UInt32(kernelheight), 0, vImage_Flags(kvImageEdgeExtend))
 
-    var BlurredPixelData = (buffer3.data.toArray(to: Float.self, capacity: Int(buffer3.width*buffer3.height)))
+    let BlurredPixelData = (buffer3.data.toArray(to: Float.self, capacity: Int(buffer3.width*buffer3.height)))
     OriginalPixelData = (buffer.data.toArray(to: Float.self, capacity: Int(buffer.width*buffer.height)))
-
+    //Bendvalue of DDP
     
-    var bendvalue = bendValue(AdjustedData: BlurredPixelData, lowerPixelLimit: lowerPixelLimit) //return bendvalue as .0, and averagepixeldata as .1
+    let bendvalue = bendValue(AdjustedData: BlurredPixelData, lowerPixelLimit: lowerPixelLimit) //return bendvalue as .0, and averagepixeldata as .1
 
-    var ddpPixelData = ddpProcessed(OriginalPixelData: OriginalPixelData, BlurredPixeldata: BlurredPixelData, Bendvalue: bendvalue.0, AveragePixel: bendvalue.1, cutOff: cutoff, MinPixel: lowerPixelLimit)
+    let ddpPixelData = ddpProcessed(OriginalPixelData: OriginalPixelData, BlurredPixeldata: BlurredPixelData, Bendvalue: bendvalue.0, AveragePixel: bendvalue.1, cutOff: cutoff, MinPixel: lowerPixelLimit)
     let ddpScaled = ddpScaled(ddpPixelData: ddpPixelData, MinPixel: lowerPixelLimit)
     
-    let DDPwithScale = returningCGImage(data: ddpScaled, buffer: buffer3)
+    let DDPwithScale = returningCGImage(data: ddpScaled, width: width, height: height, rowBytes: rowBytes)
     let originalImage = (try? buffer.createCGImage(format: format))!
-    let DDPwithoutScale = returningCGImage(data: ddpPixelData, buffer: buffer3)
     
     print("called")
     
