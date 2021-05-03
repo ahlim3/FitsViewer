@@ -23,3 +23,16 @@
             let prime = read_data!.prime
             return prime
         }
+         vImageConvolve_PlanarF(&buffer2, &buffer3, nil, 0, 0, &kernelArray, UInt32(kernelwidth), UInt32(kernelheight), 0, vImage_Flags(kvImageEdgeExtend))
+         var histogramBin3 = [vImagePixelCount](repeating: 0, count: histogramcount)
+         let histogramBinPtr3 = UnsafeMutablePointer<vImagePixelCount>(mutating: histogramBin3)
+         histogramBin3.withUnsafeMutableBufferPointer() { Ptr in
+                             let error =
+                                 vImageHistogramCalculation_PlanarF(&buffer, histogramBinPtr3, UInt32(histogramcount), 0.0, 1.0, vImage_Flags(kvImageNoFlags))
+                                 guard error == kvImageNoError else {
+                                 fatalError("Error calculating histogram: \(error)")
+                             }
+                         }
+         print(histogramBin3)
+         vImageHistogramSpecification_PlanarF(&buffer, &buffer2, nil, histogramBin3, UInt32(histogramcount), 0.0, 1.0, vImage_Flags(kvImageNoFlags))
+     */

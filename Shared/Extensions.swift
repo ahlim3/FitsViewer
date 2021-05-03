@@ -104,7 +104,7 @@ func ddpProcessed(OriginalPixelData: [Float], BlurredPixeldata: [Float], Bendval
         for i in 0 ..< OriginalPixelData.count{
         ddpPixeldata[i] = AveragePixel * ((OriginalPixelData[i]/(BlurredPixeldata[i] + Bendvalue)))
         }
-            
+    var temp = (ddpPixeldata.max(), ddpPixeldata.min())
     return ddpPixeldata
 }
 func ddpScaled(ddpPixelData: [Float], MinPixel : Pixel_F) -> [Float]{
@@ -126,15 +126,10 @@ func ddpScaled(ddpPixelData: [Float], MinPixel : Pixel_F) -> [Float]{
     print(ddpScaled.max(), ddpScaled.min())
     return ddpScaled
 }
-func histogram(data : [FITSByte_F], buffer : vImage_Buffer, histogramcount: Int) -> [vImagePixelCount]{
+func histogram(dataMaxPixel: Pixel_F, dataMinPixel: Pixel_F, buffer : vImage_Buffer, histogramcount: Int) -> [vImagePixelCount]{
     var buffer = buffer
     var histogramBin = [vImagePixelCount](repeating: 0, count: histogramcount)
     let histogramBinPtr = UnsafeMutablePointer<vImagePixelCount>(mutating: histogramBin)
-    let dataMaxPixel = Pixel_F(data.max()!)
-    let dataMinPixel = Pixel_F(data.min()!)
-    let meanPixel = Pixel_F(data.mean)
-    let stdevPixel = Pixel_F(data.stdev!)
-    print("Pixel mean : ", meanPixel, "Pixel Stdev : ", stdevPixel)
     histogramBin.withUnsafeMutableBufferPointer() { Ptr in
                         let error =
                             vImageHistogramCalculation_PlanarF(&buffer, histogramBinPtr, UInt32(histogramcount), dataMinPixel, dataMaxPixel, vImage_Flags(kvImageNoFlags))
