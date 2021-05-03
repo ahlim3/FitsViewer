@@ -5,6 +5,13 @@
 //  Created by anthony lim on 4/29/21.
 //
 import Foundation
+import FITS
+import FITSKit
+import Accelerate
+import Accelerate.vImage
+import Combine
+import CoreGraphics
+
 
 extension UnsafeMutableRawPointer {
     func toArray<T>(to type: T.Type, capacity count: Int) -> [T]{
@@ -49,7 +56,7 @@ func kArray(width: Int, height: Int, sigmaX: Float, sigmaY: Float, A: Float) -> 
     return kernelArray
 }
 
-func bendValue(AdjustedData: [Float]) -> (Float, Float){
+func bendValue(AdjustedData: [Float], lowerPixelLimit: Pixel_F) -> (Float, Float){
     let myMin:Float = 0.0
     var blackLevel:Float = 0.0
     var AdjustedData = AdjustedData
@@ -80,20 +87,78 @@ func bendValue(AdjustedData: [Float]) -> (Float, Float){
     return (bendValue, averagePixelData)
 }
 
-func ddpProcessed(OriginalPixelData: [Float], BlurredPixeldata: [Float], Bendvalue : Float, AveragePixel: Float) -> [Float]{
+func ddpProcessed(OriginalPixelData: [Float], BlurredPixeldata: [Float], Bendvalue : Float, AveragePixel: Float, cutOff: Int, MinPixel : Pixel_F) -> [Float]{
+    var OriginalPixelData = OriginalPixelData
     var ddpPixeldata = OriginalPixelData
-    for i in 0 ..< OriginalPixelData.count{
-        ddpPixeldata[i] = Bendvalue * ((OriginalPixelData[i]/(BlurredPixeldata[i] + AveragePixel)))
+    let MinPixel = Float(MinPixel)
+    if cutOff == 1{
+        for i in 0 ..< OriginalPixelData.count{
+            if OriginalPixelData[i] < MinPixel{
+                OriginalPixelData[i] = MinPixel
+            }
+            else{
+                OriginalPixelData[i] = OriginalPixelData[i]
+            }
+        }
     }
+        for i in 0 ..< OriginalPixelData.count{
+        ddpPixeldata[i] = AveragePixel * ((OriginalPixelData[i]/(BlurredPixeldata[i] + Bendvalue)))
+        }
+            
     return ddpPixeldata
 }
-func ddpScaled(ddpPixelData: [Float]) -> [Float]{
+func ddpScaled(ddpPixelData: [Float], MinPixel : Pixel_F) -> [Float]{
     var ddpScaled = ddpPixelData
     var ddpMax = Float(ddpScaled.max()!)
     var ddpMin = Float(ddpScaled.min()!)
+    if ddpMin < Float(MinPixel){
+        ddpMin = Float(MinPixel)
+    }
+    for i in 0 ..< ddpScaled.count{
+        if ddpScaled[i] < ddpMin{
+            ddpScaled[i] = ddpMin
+        }
+    }
     var adjustable = ddpMax - ddpMin
     for i in 0 ..< ddpScaled.count{
         ddpScaled[i] = (ddpScaled[i] - ddpMin) / adjustable
     }
+    print(ddpScaled.max(), ddpScaled.min())
     return ddpScaled
+}
+func histogram(data : [FITSByte_F], buffer : vImage_Buffer, histogramcount: Int) -> [vImagePixelCount]{
+    var buffer = buffer
+    var histogramBin = [vImagePixelCount](repeating: 0, count: histogramcount)
+    let histogramBinPtr = UnsafeMutablePointer<vImagePixelCount>(mutating: histogramBin)
+    let dataMaxPixel = Pixel_F(data.max()!)
+    let dataMinPixel = Pixel_F(data.min()!)
+    let meanPixel = Pixel_F(data.mean)
+    let stdevPixel = Pixel_F(data.stdev!)
+    print("Pixel mean : ", meanPixel, "Pixel Stdev : ", stdevPixel)
+    histogramBin.withUnsafeMutableBufferPointer() { Ptr in
+                        let error =
+                            vImageHistogramCalculation_PlanarF(&buffer, histogramBinPtr, UInt32(histogramcount), dataMinPixel, dataMaxPixel, vImage_Flags(kvImageNoFlags))
+                            guard error == kvImageNoError else {
+                            fatalError("Error calculating histogram: \(error)")
+                        }
+                    }
+    return histogramBin
+}
+
+func returningCGImage(data: [Float], buffer: vImage_Buffer) -> CGImage{
+    let pixelDataAsData = Data(fromArray: data)
+    let cfdata = NSData(data: pixelDataAsData) as CFData
+    
+    let provider = CGDataProvider(data: cfdata)!
+    
+    let width :Int = Int(buffer.width)
+    let height: Int = Int(buffer.height)
+    let rowBytes :Int = width*4
+    
+    let bitmapInfo: CGBitmapInfo = [
+        .byteOrder32Little,
+        .floatComponents]
+          
+    let pixelCGImage = CGImage(width:  width, height: height, bitsPerComponent: 32, bitsPerPixel: 32, bytesPerRow: rowBytes, space: CGColorSpaceCreateDeviceGray(), bitmapInfo: bitmapInfo, provider: provider, decode: nil, shouldInterpolate: false, intent: .defaultIntent)!
+    return pixelCGImage
 }

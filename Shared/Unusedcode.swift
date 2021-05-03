@@ -17,4 +17,9 @@
         var gray = retdta.withUnsafeMutableBytes{ mptr8 in
             vImage_Buffer(data: mptr8.baseAddress?.advanced(by: layerBytes * 0).bindMemory(to: FITSByte_F.self, capacity: 510 * 510), height: vImagePixelCount(510), width: vImagePixelCount(510), rowBytes: rowBytes)
         }
- */
+        func read2() -> PrimaryHDU{
+            var path = URL(string: path5)!
+            var read_data = try! FitsFile.read(contentsOf: path)
+            let prime = read_data!.prime
+            return prime
+        }
