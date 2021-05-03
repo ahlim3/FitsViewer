@@ -119,6 +119,7 @@ func histogram(dataMaxPixel: Pixel_F, dataMinPixel: Pixel_F, buffer : vImage_Buf
                             fatalError("Error calculating histogram: \(error)")
                         }
                     }
+    print(histogramBin)
     return histogramBin
 }
 
@@ -223,6 +224,10 @@ func display(Path: String) -> ([vImagePixelCount], CGImage, CGImage){
     let cutoff = OptimizedHistogramContents.3
     var histogramOpt = histogram(dataMaxPixel: upperPixelLimit, dataMinPixel: lowerPixelLimit, buffer: buffer, histogramcount: histogramcount)
     print(histogramOpt)
+    var OriginalPixelData = (buffer.data.toArray(to: Float.self, capacity: Int(buffer.width*buffer.height)))
+    OriginalPixelData = forcingMeanData(PixelData: OriginalPixelData, MinimumLimit: lowerPixelLimit)
+    let forcedOriginalData = returningCGImage(data: OriginalPixelData, buffer: buffer)
+    var forcedbuffer = try! vImage_Buffer(cgImage: forcedOriginalData, format: format)
     var buffer3 = buffer
     let kernelwidth = 7
     let kernelheight = 7
@@ -233,12 +238,14 @@ func display(Path: String) -> ([vImagePixelCount], CGImage, CGImage){
     var kernelArray = kArray(width: kernelwidth, height: kernelheight, sigmaX: simgaX, sigmaY: sigmaY, A: A)
     
     print(kernelArray, " " , kernelArray.max())
-    vImageConvolve_PlanarF(&buffer, &buffer3, nil, 0, 0, &kernelArray, UInt32(kernelwidth), UInt32(kernelheight), 0, vImage_Flags(kvImageEdgeExtend))
+    vImageConvolve_PlanarF(&forcedbuffer, &buffer3, nil, 0, 0, &kernelArray, UInt32(kernelwidth), UInt32(kernelheight), 0, vImage_Flags(kvImageEdgeExtend))
 
     var BlurredPixelData = (buffer3.data.toArray(to: Float.self, capacity: Int(buffer3.width*buffer3.height)))
+    OriginalPixelData = (buffer.data.toArray(to: Float.self, capacity: Int(buffer.width*buffer.height)))
+
+    
     var bendvalue = bendValue(AdjustedData: BlurredPixelData, lowerPixelLimit: lowerPixelLimit) //return bendvalue as .0, and averagepixeldata as .1
-    var OriginalPixelData = (buffer.data.toArray(to: Float.self, capacity: Int(buffer.width*buffer.height)))
-    //OriginalPixelData = forcingMeanData(PixelData: OriginalPixelData, MinimumLimit: lowerPixelLimit)
+
     var ddpPixelData = ddpProcessed(OriginalPixelData: OriginalPixelData, BlurredPixeldata: BlurredPixelData, Bendvalue: bendvalue.0, AveragePixel: bendvalue.1, cutOff: cutoff, MinPixel: lowerPixelLimit)
     let ddpScaled = ddpScaled(ddpPixelData: ddpPixelData, MinPixel: lowerPixelLimit)
     

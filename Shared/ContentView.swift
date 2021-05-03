@@ -201,12 +201,12 @@ struct ContentView: View {
                         NavigationLink(
                             destination: DestinationPageView()
                         ) {
-                            Text("Image 1")
+                            Text("Image 1, Edge Fixed")
                         }
                         NavigationLink(
                             destination: DestinationPageView1()
                         ) {
-                            Text("Image 2 Representable")
+                            Text("Image 2, Edge Fixed")
                         }
                         NavigationLink(
                             destination: DestinationPageView2()
@@ -221,12 +221,12 @@ struct ContentView: View {
                         NavigationLink(
                             destination: DestinationPageView4()
                         ) {
-                            Text("Image 5")
+                            Text("Image 5, RGBImage as Mono")
                         }
                         NavigationLink(
                             destination: DestinationPageView5()
                         ) {
-                            Text("Image 6 Representable")
+                            Text("Image 6 Edge Fixed")
                         }
                         NavigationLink(
                             destination: DestinationPageView6()
@@ -236,17 +236,17 @@ struct ContentView: View {
                         NavigationLink(
                             destination: DestinationPageView7()
                         ) {
-                            Text("Image 8")
+                            Text("Image 8 Edge Fixed")
                         }
                         NavigationLink(
                             destination: DestinationPageView8()
                         ) {
-                            Text("Image 9")
+                            Text("Image 9 Edge Problem, Edge is too big")
                         }
                         NavigationLink(
                             destination: DestinationPageView9()
                         ) {
-                            Text("Image 10")
+                            Text("Image 10 Edge Fixed")
                         }
                         
                     }
