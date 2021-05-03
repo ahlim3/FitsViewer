@@ -90,17 +90,6 @@ func bendValue(AdjustedData: [Float], lowerPixelLimit: Pixel_F) -> (Float, Float
 func ddpProcessed(OriginalPixelData: [Float], BlurredPixeldata: [Float], Bendvalue : Float, AveragePixel: Float, cutOff: Int, MinPixel : Pixel_F) -> [Float]{
     var OriginalPixelData = OriginalPixelData
     var ddpPixeldata = OriginalPixelData
-    let MinPixel = Float(MinPixel)
-    if cutOff == 1{
-        for i in 0 ..< OriginalPixelData.count{
-            if OriginalPixelData[i] < MinPixel{
-                OriginalPixelData[i] = MinPixel
-            }
-            else{
-                OriginalPixelData[i] = OriginalPixelData[i]
-            }
-        }
-    }
         for i in 0 ..< OriginalPixelData.count{
         ddpPixeldata[i] = AveragePixel * ((OriginalPixelData[i]/(BlurredPixeldata[i] + Bendvalue)))
         }
@@ -111,14 +100,6 @@ func ddpScaled(ddpPixelData: [Float], MinPixel : Pixel_F) -> [Float]{
     var ddpScaled = ddpPixelData
     var ddpMax = Float(ddpScaled.max()!)
     var ddpMin = Float(ddpScaled.min()!)
-    if ddpMin < Float(MinPixel){
-        ddpMin = Float(MinPixel)
-    }
-    for i in 0 ..< ddpScaled.count{
-        if ddpScaled[i] < ddpMin{
-            ddpScaled[i] = ddpMin
-        }
-    }
     var adjustable = ddpMax - ddpMin
     for i in 0 ..< ddpScaled.count{
         ddpScaled[i] = (ddpScaled[i] - ddpMin) / adjustable
@@ -156,4 +137,42 @@ func returningCGImage(data: [Float], buffer: vImage_Buffer) -> CGImage{
           
     let pixelCGImage = CGImage(width:  width, height: height, bitsPerComponent: 32, bitsPerPixel: 32, bytesPerRow: rowBytes, space: CGColorSpaceCreateDeviceGray(), bitmapInfo: bitmapInfo, provider: provider, decode: nil, shouldInterpolate: false, intent: .defaultIntent)!
     return pixelCGImage
+}
+
+func optimizedHist(histogram_in : [vImagePixelCount], histogramcount : Int) -> ([vImagePixelCount], Pixel_F, Pixel_F, Int){
+    var optimizedHist = histogram_in
+    var MaxPixel = 0
+    var MinPixel = 0
+    var limit = Int(Double(histogramcount) * 0.015)
+    var PixelLimitingCount = Int(Double(optimizedHist.reduce(0,+)) * 0.005)
+    var PixelLimitingCountUpper = Int(Double(PixelLimitingCount) * 0.01)
+    var comparableValue = 0
+    var minimumCutoff = 1
+    for i in 0 ..< histogramcount {
+        if optimizedHist[i] > PixelLimitingCount{
+            MinPixel = i
+            break
+        }
+    }
+    if MinPixel > 20 {
+        MinPixel = MinPixel - 10
+    }
+    if MinPixel < 5 {
+        MinPixel = 1
+        minimumCutoff = 0
+    }
+    
+    for i in 0 ..< histogramcount{
+        if optimizedHist[i] > 10{
+            MaxPixel = i
+        }
+        
+    }
+    let difference = MaxPixel - MinPixel
+    if difference < 30 {
+        MaxPixel = MinPixel + Int(Double(histogramcount) * 0.1)
+    }
+    var MaxPixel_F = Pixel_F(Float(MaxPixel) / Float(histogramcount))
+    var MinPixel_F = Pixel_F(Float(MinPixel) / Float(histogramcount))
+    return (optimizedHist, MaxPixel_F, MinPixel_F, minimumCutoff)
 }

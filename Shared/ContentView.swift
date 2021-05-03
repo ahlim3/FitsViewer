@@ -50,47 +50,8 @@ struct ContentView: View {
         }
         return threeData!
     }
-    func optimizedHist(histogram_in : [vImagePixelCount], histogramcount : Int) -> ([vImagePixelCount], Pixel_F, Pixel_F, Int){
-        var optimizedHist = histogram_in
-        var MaxPixel = 0
-        var MinPixel = 0
-        var limit = Int(Double(histogramcount) * 0.015)
-        var PixelLimitingCount = Int(Double(optimizedHist.reduce(0,+)) * 0.005)
-        var PixelLimitingCountUpper = Int(Double(PixelLimitingCount) * 0.01)
-        var comparableValue = 0
-        var minimumCutoff = 1
-        for i in 0 ..< histogramcount {
-            if optimizedHist[i] > PixelLimitingCount{
-                MinPixel = i
-                break
-            }
-        }
-        if MinPixel > 20 {
-            MinPixel = MinPixel - 10
-        }
-        if MinPixel < 5 {
-            MinPixel = 1
-            minimumCutoff = 0
-        }
-        
-        for i in 0 ..< histogramcount{
-            if optimizedHist[i] > 10{
-                MaxPixel = i
-            }
-            
-        }
-        let difference = MaxPixel - MinPixel
-        if difference < 30 {
-            MaxPixel = MinPixel + Int(Double(histogramcount) * 0.1)
-        }
-        
-        print(optimizedHist)
-        var MaxPixel_F = Pixel_F(Float(MaxPixel) / Float(histogramcount))
-        var MinPixel_F = Pixel_F(Float(MinPixel) / Float(histogramcount))
-        return (optimizedHist, MaxPixel_F, MinPixel_F, minimumCutoff)
-        
-    }
 
+    
     func display() -> ([vImagePixelCount], CGImage, CGImage, CGImage){
         let threedata = read()
         //target data
@@ -112,18 +73,17 @@ struct ContentView: View {
         let cutoff = OptimizedHistogramContents.3
         var histogramOpt = histogram(dataMaxPixel: upperPixelLimit, dataMinPixel: lowerPixelLimit, buffer: buffer, histogramcount: histogramcount)
         print(histogramOpt)
-        vImageHistogramSpecification_PlanarF(&buffer, &buffer2, nil, histogramOpt, UInt32(histogramcount), 0.0, 1.0, vImage_Flags(kvImageNoFlags))
         var buffer3 = buffer
-        let kernelwidth = 9
-        let kernelheight = 9
+        let kernelwidth = 7
+        let kernelheight = 7
         var A : Float = 1.0
-        var simgaX: Float = 0.20
-        var sigmaY: Float = 0.20
+        var simgaX: Float = 0.75
+        var sigmaY: Float = 0.75
         
         var kernelArray = kArray(width: kernelwidth, height: kernelheight, sigmaX: simgaX, sigmaY: sigmaY, A: A)
         
         print(kernelArray, " " , kernelArray.max())
-
+        vImageConvolve_PlanarF(&buffer, &buffer3, nil, 0, 0, &kernelArray, UInt32(kernelwidth), UInt32(kernelheight), 0, vImage_Flags(kvImageEdgeExtend))
 
         var BlurredPixelData = (buffer3.data.toArray(to: Float.self, capacity: Int(buffer3.width*buffer3.height)))
         var OriginalPixelData = (buffer.data.toArray(to: Float.self, capacity: Int(buffer.width*buffer.height)))
