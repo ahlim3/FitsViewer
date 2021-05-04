@@ -14,7 +14,7 @@ import Combine
 import CoreGraphics
 
 struct DestinationPageView: View {
-    let path = "file:///Users/anthonylim/Downloads/C2019Y4-ID10934-OC144374-GR4095-LUM2.fit"
+    let path = "file:///Users/anthonylim/Downloads/M42-ID10211-OC141775-GR1840-LUM.fit"
     var body: some View {
         let modified = display(Path: path)
         TabView{
@@ -86,7 +86,7 @@ struct DestinationPageView3: View {
 }
 }
 struct DestinationPageView4: View {
-     let path4 = "file:///Users/anthonylim/Downloads/JtIMAGE_009.fits"
+     let path4 = "file:///Users/anthonylim/Downloads/UGC3697-104341-LUM.fit"
     var body: some View {
         let modified = display(Path: path4)
         TabView{
@@ -104,7 +104,7 @@ struct DestinationPageView4: View {
 }
 }
 struct DestinationPageView5: View {
-     let path5 = "file:///Users/anthonylim/Downloads/2020-12-03_19_16_43.fits"
+     let path5 = "file:///Users/anthonylim/Downloads/BGO-2-KIC8462852-ID06656-OC126425-GR7646-SG.fit"
     var body: some View {
         let modified = display(Path: path5)
         TabView{

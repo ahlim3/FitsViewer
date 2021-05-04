@@ -205,9 +205,7 @@ func display(Path: String) -> ([vImagePixelCount], CGImage, CGImage){
     let height: Int = Int(buffer.height)
     let rowBytes :Int = width*4
     let histogramcount = 1024
-    let dataMaxPixel = Pixel_F(data.max()!)
-    let dataMinPixel = Pixel_F(data.min()!)
-    let histogramBin = histogram(dataMaxPixel: dataMaxPixel, dataMinPixel: dataMinPixel, buffer: buffer, histogramcount: histogramcount)
+    let histogramBin = histogram(dataMaxPixel: Pixel_F(data.max()!), dataMinPixel: Pixel_F(data.min()!), buffer: buffer, histogramcount: histogramcount)
     //Return three data, Histogram(0), Maximum Pixel Value(1), Minimum Pixel Value(2), Cutoff?(3) = 0 no, 1 yes
     let OptimizedHistogramContents = OptValue(histogram_in: histogramBin, histogramcount: histogramcount)
     let lowerPixelLimit = OptimizedHistogramContents.1
