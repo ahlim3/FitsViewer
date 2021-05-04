@@ -6,11 +6,6 @@
 //
 
 import SwiftUI
-import FITS
-import FITSKit
-import Accelerate
-import Accelerate.vImage
-import Combine
 import CoreGraphics
 
 struct DestinationPageView: View {
