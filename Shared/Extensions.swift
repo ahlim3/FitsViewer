@@ -234,9 +234,9 @@ func display(Path: String) -> ([vImagePixelCount], CGImage, CGImage){
     let bendvalue = bendValue(AdjustedData: BlurredPixelData, lowerPixelLimit: lowerPixelLimit) //return bendvalue as .0, and averagepixeldata as .1
 
     let ddpPixelData = ddpProcessed(OriginalPixelData: OriginalPixelData, BlurredPixeldata: BlurredPixelData, Bendvalue: bendvalue.0, AveragePixel: bendvalue.1, cutOff: cutoff, MinPixel: lowerPixelLimit)
-    let ddpScaled = ddpScaled(ddpPixelData: ddpPixelData, MinPixel: lowerPixelLimit)
+    let DDPScaled = ddpScaled(ddpPixelData: ddpPixelData, MinPixel: lowerPixelLimit)
     
-    let DDPwithScale = returningCGImage(data: ddpScaled, width: width, height: height, rowBytes: rowBytes)
+    let DDPwithScale = returningCGImage(data: DDPScaled, width: width, height: height, rowBytes: rowBytes)
     let originalImage = (try? buffer.createCGImage(format: format))!
     
     print("called")
