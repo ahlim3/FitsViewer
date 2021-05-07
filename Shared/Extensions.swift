@@ -11,29 +11,19 @@ import Accelerate
 import Accelerate.vImage
 import Combine
 import CoreGraphics
+import UniformTypeIdentifiers
 
 
-extension UnsafeMutableRawPointer {
-    func toArray<T>(to type: T.Type, capacity count: Int) -> [T]{
-        let pointer = bindMemory(to: type, capacity: count)
-        return Array(UnsafeBufferPointer(start: pointer, count: count))
-    }
+
+extension UTType {
+  static let fitDocument = UTType(
+    exportedAs: "com.jtIIT.fit")
 }
 
-
-extension Data {
-
-    init<T>(fromArray values: [T]) {
-        self = values.withUnsafeBytes { Data($0) }
-    }
-
-    func toArray<T>(type: T.Type) -> [T] where T: ExpressibleByIntegerLiteral {
-        var array = Array<T>(repeating: 0, count: self.count/MemoryLayout<T>.stride)
-        _ = array.withUnsafeMutableBytes { copyBytes(to: $0) }
-        return array
-    }
-}
-func kArray(width: Int, height: Int, sigmaX: Float, sigmaY: Float, A: Float) -> [Float]
+class FITSDatahandler: ObservableObject{
+    @Published var threeData: ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)?
+    @Published var returnedInfo : ([vImagePixelCount], CGImage, CGImage)?
+    func kArray(width: Int, height: Int, sigmaX: Float, sigmaY: Float, A: Float) -> [Float]
 {
     let kernelwidth = width
     let kernelheight = height
@@ -177,23 +167,11 @@ func forcingMeanData(PixelData : [Float], MinimumLimit: Float) -> [Float]{
     }
     return PixelData
 }
-func read(Path: String) -> ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat){
-    var threeData: ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)?
-    var path = URL(string: Path)!
-    var read_data = try! FitsFile.read(contentsOf: path)
-    let prime = read_data?.prime
-    print(prime)
-    prime?.v_complete(onError: {_ in
-        print("CGImage creation error")
-    }) { result in
-        threeData = result
-    }
-    return threeData!
-}
 
 
-func display(Path: String) -> ([vImagePixelCount], CGImage, CGImage){
-    let threedata = read(Path: Path)
+
+func returnInfo(ThreeData : ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)) -> ([vImagePixelCount], CGImage, CGImage){
+    let threedata = ThreeData
     //target data
     let data = threedata.0
     //Buffer from FITS File
@@ -242,4 +220,9 @@ func display(Path: String) -> ([vImagePixelCount], CGImage, CGImage){
     print("called")
     
     return(histogramBin, originalImage,  DDPwithScale)
+    }
 }
+
+
+
+
