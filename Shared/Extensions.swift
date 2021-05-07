@@ -20,9 +20,7 @@ extension UTType {
     exportedAs: "com.jtIIT.fit")
 }
 
-class FITSDatahandler: ObservableObject{
-    @Published var threeData: ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)?
-    @Published var returnedInfo : ([vImagePixelCount], CGImage, CGImage)?
+public class FITSDatahandler: ObservableObject{
     func kArray(width: Int, height: Int, sigmaX: Float, sigmaY: Float, A: Float) -> [Float]
 {
     let kernelwidth = width
