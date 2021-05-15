@@ -4,6 +4,7 @@
 //
 //  Created by anthony lim on 4/29/21.
 //
+
 import Foundation
 import FITS
 import FITSKit
@@ -20,7 +21,6 @@ extension UTType {
     exportedAs: "com.jtIIT.fit")
 }
 
-public class FITSDatahandler: ObservableObject{
     func kArray(width: Int, height: Int, sigmaX: Float, sigmaY: Float, A: Float) -> [Float]
 {
     let kernelwidth = width
@@ -211,7 +211,9 @@ func returnInfo(ThreeData : ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)) -
 
     let ddpPixelData = ddpProcessed(OriginalPixelData: OriginalPixelData, BlurredPixeldata: BlurredPixelData, Bendvalue: bendvalue.0, AveragePixel: bendvalue.1, cutOff: cutoff, MinPixel: lowerPixelLimit)
     let DDPScaled = ddpScaled(ddpPixelData: ddpPixelData, MinPixel: lowerPixelLimit)
-    
+    let bitmapInfo: CGBitmapInfo = [
+        .byteOrder32Little,
+        .floatComponents]
     let DDPwithScale = returningCGImage(data: DDPScaled, width: width, height: height, rowBytes: rowBytes)
     let originalImage = (try? buffer.createCGImage(format: format))!
     
@@ -219,8 +221,6 @@ func returnInfo(ThreeData : ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)) -
     
     return(histogramBin, originalImage,  DDPwithScale)
     }
-}
-
 
 
 
