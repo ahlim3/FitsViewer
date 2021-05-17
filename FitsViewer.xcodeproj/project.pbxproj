@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4356111E263BB24200F638AF /* FITSCore in Frameworks */ = {isa = PBXBuildFile; productRef = 4356111D263BB24200F638AF /* FITSCore */; };
-		43561124263BB26200F638AF /* FITSCore in Frameworks */ = {isa = PBXBuildFile; productRef = 43561123263BB26200F638AF /* FITSCore */; };
 		43561128263BB27B00F638AF /* Stdev.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43561127263BB27B00F638AF /* Stdev.swift */; };
 		43561129263BB27B00F638AF /* Stdev.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43561127263BB27B00F638AF /* Stdev.swift */; };
 		4356112B263BB35E00F638AF /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4356112A263BB35E00F638AF /* Extensions.swift */; };
@@ -21,8 +19,10 @@
 		435AD286262E98DA00280E5A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435AD25B262E98D900280E5A /* ContentView.swift */; };
 		435AD287262E98DA00280E5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 435AD25C262E98DA00280E5A /* Assets.xcassets */; };
 		435AD288262E98DA00280E5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 435AD25C262E98DA00280E5A /* Assets.xcassets */; };
-		43F7A28C2652DFEF00DD9A38 /* FITSKit in Frameworks */ = {isa = PBXBuildFile; productRef = 43F7A28B2652DFEF00DD9A38 /* FITSKit */; };
-		43F7A28E2652E00500DD9A38 /* FITSKit in Frameworks */ = {isa = PBXBuildFile; productRef = 43F7A28D2652E00500DD9A38 /* FITSKit */; };
+		43A3B1262652F8E1009B5A4C /* FITSCore in Frameworks */ = {isa = PBXBuildFile; productRef = 43A3B1252652F8E1009B5A4C /* FITSCore */; };
+		43A3B1292652F8FF009B5A4C /* FITSKit in Frameworks */ = {isa = PBXBuildFile; productRef = 43A3B1282652F8FF009B5A4C /* FITSKit */; };
+		43A3B12B2652F910009B5A4C /* FITSCore in Frameworks */ = {isa = PBXBuildFile; productRef = 43A3B12A2652F910009B5A4C /* FITSCore */; };
+		43A3B12D2652F913009B5A4C /* FITSKit in Frameworks */ = {isa = PBXBuildFile; productRef = 43A3B12C2652F913009B5A4C /* FITSKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,8 +67,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4356111E263BB24200F638AF /* FITSCore in Frameworks */,
-				43F7A28C2652DFEF00DD9A38 /* FITSKit in Frameworks */,
+				43A3B1262652F8E1009B5A4C /* FITSCore in Frameworks */,
+				43A3B1292652F8FF009B5A4C /* FITSKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -76,8 +76,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43561124263BB26200F638AF /* FITSCore in Frameworks */,
-				43F7A28E2652E00500DD9A38 /* FITSKit in Frameworks */,
+				43A3B12B2652F910009B5A4C /* FITSCore in Frameworks */,
+				43A3B12D2652F913009B5A4C /* FITSKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -194,8 +194,8 @@
 			);
 			name = "FitsViewer (iOS)";
 			packageProductDependencies = (
-				4356111D263BB24200F638AF /* FITSCore */,
-				43F7A28B2652DFEF00DD9A38 /* FITSKit */,
+				43A3B1252652F8E1009B5A4C /* FITSCore */,
+				43A3B1282652F8FF009B5A4C /* FITSKit */,
 			);
 			productName = "FitsViewer (iOS)";
 			productReference = 435AD261262E98DA00280E5A /* FitsViewer.app */;
@@ -215,8 +215,8 @@
 			);
 			name = "FitsViewer (macOS)";
 			packageProductDependencies = (
-				43561123263BB26200F638AF /* FITSCore */,
-				43F7A28D2652E00500DD9A38 /* FITSKit */,
+				43A3B12A2652F910009B5A4C /* FITSCore */,
+				43A3B12C2652F913009B5A4C /* FITSKit */,
 			);
 			productName = "FitsViewer (macOS)";
 			productReference = 435AD269262E98DA00280E5A /* FitsViewer.app */;
@@ -293,8 +293,8 @@
 			);
 			mainGroup = 435AD254262E98D900280E5A;
 			packageReferences = (
-				4356111C263BB24200F638AF /* XCRemoteSwiftPackageReference "fitscore" */,
-				43F7A28A2652DFEF00DD9A38 /* XCRemoteSwiftPackageReference "fitskit_RGBonly" */,
+				43A3B1242652F8E1009B5A4C /* XCRemoteSwiftPackageReference "fitscore" */,
+				43A3B1272652F8FF009B5A4C /* XCRemoteSwiftPackageReference "fitskit" */,
 			);
 			productRefGroup = 435AD262262E98DA00280E5A /* Products */;
 			projectDirPath = "";
@@ -742,17 +742,17 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		4356111C263BB24200F638AF /* XCRemoteSwiftPackageReference "fitscore" */ = {
+		43A3B1242652F8E1009B5A4C /* XCRemoteSwiftPackageReference "fitscore" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/brampf/fitscore.git";
+			repositoryURL = "https://github.com/ahlim3/fitscore.git";
 			requirement = {
 				branch = "fitskit-advanced";
 				kind = branch;
 			};
 		};
-		43F7A28A2652DFEF00DD9A38 /* XCRemoteSwiftPackageReference "fitskit_RGBonly" */ = {
+		43A3B1272652F8FF009B5A4C /* XCRemoteSwiftPackageReference "fitskit" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ahlim3/fitskit_RGBonly.git";
+			repositoryURL = "https://github.com/ahlim3/fitskit.git";
 			requirement = {
 				branch = advanced;
 				kind = branch;
@@ -761,24 +761,24 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		4356111D263BB24200F638AF /* FITSCore */ = {
+		43A3B1252652F8E1009B5A4C /* FITSCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 4356111C263BB24200F638AF /* XCRemoteSwiftPackageReference "fitscore" */;
+			package = 43A3B1242652F8E1009B5A4C /* XCRemoteSwiftPackageReference "fitscore" */;
 			productName = FITSCore;
 		};
-		43561123263BB26200F638AF /* FITSCore */ = {
+		43A3B1282652F8FF009B5A4C /* FITSKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 4356111C263BB24200F638AF /* XCRemoteSwiftPackageReference "fitscore" */;
-			productName = FITSCore;
-		};
-		43F7A28B2652DFEF00DD9A38 /* FITSKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 43F7A28A2652DFEF00DD9A38 /* XCRemoteSwiftPackageReference "fitskit_RGBonly" */;
+			package = 43A3B1272652F8FF009B5A4C /* XCRemoteSwiftPackageReference "fitskit" */;
 			productName = FITSKit;
 		};
-		43F7A28D2652E00500DD9A38 /* FITSKit */ = {
+		43A3B12A2652F910009B5A4C /* FITSCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 43F7A28A2652DFEF00DD9A38 /* XCRemoteSwiftPackageReference "fitskit_RGBonly" */;
+			package = 43A3B1242652F8E1009B5A4C /* XCRemoteSwiftPackageReference "fitscore" */;
+			productName = FITSCore;
+		};
+		43A3B12C2652F913009B5A4C /* FITSKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 43A3B1272652F8FF009B5A4C /* XCRemoteSwiftPackageReference "fitskit" */;
 			productName = FITSKit;
 		};
 /* End XCSwiftPackageProductDependency section */

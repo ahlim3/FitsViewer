@@ -3,7 +3,7 @@
     "pins": [
       {
         "package": "FITSCore",
-        "repositoryURL": "https://github.com/brampf/fitscore.git",
+        "repositoryURL": "https://github.com/ahlim3/fitscore.git",
         "state": {
           "branch": "fitskit-advanced",
           "revision": "9a8aa585200b8522346e261909694f1e39f96f66",
@@ -12,10 +12,10 @@
       },
       {
         "package": "FITSKit",
-        "repositoryURL": "https://github.com/ahlim3/fitskit_RGBonly.git",
+        "repositoryURL": "https://github.com/ahlim3/fitskit.git",
         "state": {
           "branch": "advanced",
-          "revision": "07378d25e2d456f6fee48482dce4532e8ce1a26e",
+          "revision": "ffa26e6a43b25032b653d997e221ed1be6c91a86",
           "version": null
         }
       },
