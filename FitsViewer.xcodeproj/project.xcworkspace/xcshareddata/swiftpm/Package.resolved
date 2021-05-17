@@ -12,7 +12,7 @@
       },
       {
         "package": "FITSKit",
-        "repositoryURL": "https://gitlab.com/alim31/fitskit_RGBonly.git",
+        "repositoryURL": "https://github.com/ahlim3/fitskit_RGBonly.git",
         "state": {
           "branch": "advanced",
           "revision": "07378d25e2d456f6fee48482dce4532e8ce1a26e",

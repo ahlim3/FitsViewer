@@ -13,7 +13,6 @@ import Accelerate.vImage
 import Combine
 import UniformTypeIdentifiers
 
-
 struct ContentView: View {
     
     @State var called = 0
@@ -257,11 +256,8 @@ func returnInfo(ThreeData : ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)) -
                 processedImage?.resizable().scaledToFit()
 
             }
-            HStack{
-                convolvedIamge?.resizable().scaledToFit()
-            }
-                    
         }
+
         VStack{
             Divider()
             
