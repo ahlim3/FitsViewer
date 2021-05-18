@@ -13,6 +13,10 @@ import Accelerate.vImage
 import Combine
 import UniformTypeIdentifiers
 
+extension UTType {
+  static let fitDocument = UTType(
+    exportedAs: "com.jtIIT.fit")
+}
 struct ContentView: View {
     
     @State var called = 0
