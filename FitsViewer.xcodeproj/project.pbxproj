@@ -7,10 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		432621CF2654BD9600BA928D /* CorePlot in Frameworks */ = {isa = PBXBuildFile; productRef = 432621CE2654BD9600BA928D /* CorePlot */; };
+		432621D12654BD9F00BA928D /* CorePlot in Frameworks */ = {isa = PBXBuildFile; productRef = 432621D02654BD9F00BA928D /* CorePlot */; };
+		432621D52654BDD900BA928D /* ChangingPlotParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432621D22654BDD900BA928D /* ChangingPlotParameters.swift */; };
+		432621D62654BDD900BA928D /* ChangingPlotParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432621D22654BDD900BA928D /* ChangingPlotParameters.swift */; };
+		432621D72654BDD900BA928D /* CalculatePlotData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432621D32654BDD900BA928D /* CalculatePlotData.swift */; };
+		432621D82654BDD900BA928D /* CalculatePlotData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432621D32654BDD900BA928D /* CalculatePlotData.swift */; };
+		432621D92654BDD900BA928D /* PlotDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432621D42654BDD900BA928D /* PlotDataClass.swift */; };
+		432621DA2654BDD900BA928D /* PlotDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432621D42654BDD900BA928D /* PlotDataClass.swift */; };
+		432621DC2654BF9B00BA928D /* CorePlot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432621DB2654BF9B00BA928D /* CorePlot.swift */; };
+		432621DD2654BF9B00BA928D /* CorePlot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432621DB2654BF9B00BA928D /* CorePlot.swift */; };
 		4329A3E02654822200E63459 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4329A3DF2654822200E63459 /* Extension.swift */; };
 		4329A3E12654822200E63459 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4329A3DF2654822200E63459 /* Extension.swift */; };
-		4329A3E6265493D600E63459 /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4329A3E5265493D600E63459 /* DrawingView.swift */; };
-		4329A3E7265493D600E63459 /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4329A3E5265493D600E63459 /* DrawingView.swift */; };
 		43561128263BB27B00F638AF /* Stdev.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43561127263BB27B00F638AF /* Stdev.swift */; };
 		43561129263BB27B00F638AF /* Stdev.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43561127263BB27B00F638AF /* Stdev.swift */; };
 		435AD276262E98DA00280E5A /* Tests_iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435AD275262E98DA00280E5A /* Tests_iOS.swift */; };
@@ -45,8 +53,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		432621D22654BDD900BA928D /* ChangingPlotParameters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangingPlotParameters.swift; sourceTree = "<group>"; };
+		432621D32654BDD900BA928D /* CalculatePlotData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalculatePlotData.swift; sourceTree = "<group>"; };
+		432621D42654BDD900BA928D /* PlotDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlotDataClass.swift; sourceTree = "<group>"; };
+		432621DB2654BF9B00BA928D /* CorePlot.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CorePlot.swift; sourceTree = "<group>"; };
 		4329A3DF2654822200E63459 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
-		4329A3E5265493D600E63459 /* DrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingView.swift; sourceTree = "<group>"; };
 		43561127263BB27B00F638AF /* Stdev.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stdev.swift; sourceTree = "<group>"; };
 		435AD25A262E98D900280E5A /* FitsViewerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FitsViewerApp.swift; sourceTree = "<group>"; };
 		435AD25B262E98D900280E5A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -71,6 +82,7 @@
 			files = (
 				43A3B1262652F8E1009B5A4C /* FITSCore in Frameworks */,
 				43A3B1292652F8FF009B5A4C /* FITSKit in Frameworks */,
+				432621CF2654BD9600BA928D /* CorePlot in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -80,6 +92,7 @@
 			files = (
 				43A3B12B2652F910009B5A4C /* FITSCore in Frameworks */,
 				43A3B12D2652F913009B5A4C /* FITSKit in Frameworks */,
+				432621D12654BD9F00BA928D /* CorePlot in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,8 +139,11 @@
 				435AD25A262E98D900280E5A /* FitsViewerApp.swift */,
 				435AD25B262E98D900280E5A /* ContentView.swift */,
 				4329A3DF2654822200E63459 /* Extension.swift */,
-				4329A3E5265493D600E63459 /* DrawingView.swift */,
 				43561127263BB27B00F638AF /* Stdev.swift */,
+				432621D32654BDD900BA928D /* CalculatePlotData.swift */,
+				432621D22654BDD900BA928D /* ChangingPlotParameters.swift */,
+				432621D42654BDD900BA928D /* PlotDataClass.swift */,
+				432621DB2654BF9B00BA928D /* CorePlot.swift */,
 				435AD25C262E98DA00280E5A /* Assets.xcassets */,
 			);
 			path = Shared;
@@ -198,6 +214,7 @@
 			packageProductDependencies = (
 				43A3B1252652F8E1009B5A4C /* FITSCore */,
 				43A3B1282652F8FF009B5A4C /* FITSKit */,
+				432621CE2654BD9600BA928D /* CorePlot */,
 			);
 			productName = "FitsViewer (iOS)";
 			productReference = 435AD261262E98DA00280E5A /* FitsViewer.app */;
@@ -219,6 +236,7 @@
 			packageProductDependencies = (
 				43A3B12A2652F910009B5A4C /* FITSCore */,
 				43A3B12C2652F913009B5A4C /* FITSKit */,
+				432621D02654BD9F00BA928D /* CorePlot */,
 			);
 			productName = "FitsViewer (macOS)";
 			productReference = 435AD269262E98DA00280E5A /* FitsViewer.app */;
@@ -297,6 +315,7 @@
 			packageReferences = (
 				43A3B1242652F8E1009B5A4C /* XCRemoteSwiftPackageReference "fitscore" */,
 				43A3B1272652F8FF009B5A4C /* XCRemoteSwiftPackageReference "fitskit" */,
+				432621CD2654BD9600BA928D /* XCRemoteSwiftPackageReference "core-plot" */,
 			);
 			productRefGroup = 435AD262262E98DA00280E5A /* Products */;
 			projectDirPath = "";
@@ -350,9 +369,12 @@
 			files = (
 				435AD285262E98DA00280E5A /* ContentView.swift in Sources */,
 				43561128263BB27B00F638AF /* Stdev.swift in Sources */,
-				4329A3E6265493D600E63459 /* DrawingView.swift in Sources */,
+				432621DC2654BF9B00BA928D /* CorePlot.swift in Sources */,
 				435AD283262E98DA00280E5A /* FitsViewerApp.swift in Sources */,
+				432621D72654BDD900BA928D /* CalculatePlotData.swift in Sources */,
+				432621D92654BDD900BA928D /* PlotDataClass.swift in Sources */,
 				4329A3E02654822200E63459 /* Extension.swift in Sources */,
+				432621D52654BDD900BA928D /* ChangingPlotParameters.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -362,9 +384,12 @@
 			files = (
 				435AD286262E98DA00280E5A /* ContentView.swift in Sources */,
 				43561129263BB27B00F638AF /* Stdev.swift in Sources */,
-				4329A3E7265493D600E63459 /* DrawingView.swift in Sources */,
+				432621DD2654BF9B00BA928D /* CorePlot.swift in Sources */,
 				435AD284262E98DA00280E5A /* FitsViewerApp.swift in Sources */,
+				432621D82654BDD900BA928D /* CalculatePlotData.swift in Sources */,
+				432621DA2654BDD900BA928D /* PlotDataClass.swift in Sources */,
 				4329A3E12654822200E63459 /* Extension.swift in Sources */,
+				432621D62654BDD900BA928D /* ChangingPlotParameters.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -746,6 +771,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		432621CD2654BD9600BA928D /* XCRemoteSwiftPackageReference "core-plot" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/core-plot/core-plot.git";
+			requirement = {
+				branch = "release-2.4";
+				kind = branch;
+			};
+		};
 		43A3B1242652F8E1009B5A4C /* XCRemoteSwiftPackageReference "fitscore" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ahlim3/fitscore.git";
@@ -765,6 +798,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		432621CE2654BD9600BA928D /* CorePlot */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 432621CD2654BD9600BA928D /* XCRemoteSwiftPackageReference "core-plot" */;
+			productName = CorePlot;
+		};
+		432621D02654BD9F00BA928D /* CorePlot */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 432621CD2654BD9600BA928D /* XCRemoteSwiftPackageReference "core-plot" */;
+			productName = CorePlot;
+		};
 		43A3B1252652F8E1009B5A4C /* FITSCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 43A3B1242652F8E1009B5A4C /* XCRemoteSwiftPackageReference "fitscore" */;

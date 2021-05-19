@@ -12,7 +12,9 @@ import Accelerate
 import Accelerate.vImage
 import Combine
 import UniformTypeIdentifiers
+import CorePlot
 
+typealias plotDataType = [CPTScatterPlotField : Double]
 
 extension UTType {
   static let fitDocument = UTType(
@@ -20,6 +22,8 @@ extension UTType {
 }
 
 struct ContentView: View {
+    @ObservedObject var plotDataModel = PlotDataClass(fromLine: true)
+    @ObservedObject private var dataCalculator = CalculatePlotData()
     @EnvironmentObject var fitsHandler: FITSHandler
     @State var called = 0
     @State var isImporting: Bool = false
@@ -31,8 +35,9 @@ struct ContentView: View {
     @State var displayImage: Image?
     @State var ImageString = "Process Image"
     @State var lowerPixelLimit = Pixel_F(0.0)
-    @State var insideData = [(xPoint: Double, yPoint: Double)]()
     @State var threeData: ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)?
+    @State var xpoints = [Double]()
+    @State var ypoints = [Double]()
     func display(Data: ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)) {
         let ImageInfo = returnInfo(ThreeData: threeData!)
         rawImage = Image(ImageInfo.1, scale: 2.0, label: Text("Raw"))
@@ -72,10 +77,17 @@ func returnInfo(ThreeData : ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)) -
     let width :Int = Int(buffer.width)
     let height: Int = Int(buffer.height)
     let rowBytes :Int = width*4
-    let histogramcount = 1024
+    let histogramcount = 256
     let histogramBin = fitsHandler.histogram(dataMaxPixel: Pixel_F(data.max()!), dataMinPixel: Pixel_F(data.min()!), buffer: buffer, histogramcount: histogramcount)
-    insideData = fitsHandler.histogramDIsplay(histogramBin: histogramBin)
-    
+    let histMax = Double(histogramBin.max()!)
+    var xpointsinside = [Double]()
+    var ypointsinside = [Double]()
+    for i in 0 ..< histogramcount{
+        xpointsinside.append(Double(i) / Double(histogramcount))
+        ypointsinside.append(Double(histogramBin[i])/histMax)
+    }
+    xpoints = xpointsinside
+    ypoints = ypointsinside
     //Return three data, Histogram(0), Maximum Pixel Value(1), Minimum Pixel Value(2), Cutoff?(3) = 0 no, 1 yes
     let OptimizedHistogramContents = fitsHandler.OptValue(histogram_in: histogramBin, histogramcount: histogramcount)
     lowerPixelLimit = OptimizedHistogramContents.1
@@ -108,18 +120,33 @@ func returnInfo(ThreeData : ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)) -
     let ConvolveImage = fitsHandler.returningCGImage(data: BlurredPixelData, width: width, height: height, rowBytes: rowBytes)
     let DDPwithScale = fitsHandler.returningCGImage(data: DDPScaled, width: width, height: height, rowBytes: rowBytes)
     let originalImage = (try? buffer.createCGImage(format: format))!
-    
+    calcHistogram()
     print("called")
     return(histogramBin, originalImage,  DDPwithScale, ConvolveImage)
+    }
+    func calcHistogram(){
+        dataCalculator.plotDataModel = self.plotDataModel
+        dataCalculator.plotHistogram(xpoint: xpoints, ypoint: ypoints)
     }
 
 
     var body: some View {
-        GeometryReader { geometry in
-        VStack{
+        TabView{
+        HStack{
+            processedImage?.resizable().scaledToFit()
+        }
+        HStack{
+            CorePlot(dataForPlot: $plotDataModel.plotData, changingPlotParameters: $plotDataModel.changingPlotParameters)
+                .setPlotPadding(left: 10)
+                .setPlotPadding(right: 10)
+                .setPlotPadding(top: 10)
+                .setPlotPadding(bottom: 10)
+                .padding()
+        }
+        }
+            VStack{
                 Button("Load", action: {
                     isImporting = false
-                    insideData = []
                     //fix broken picker sheet
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         isImporting = true
@@ -159,27 +186,15 @@ func returnInfo(ThreeData : ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)) -
                         print(error.localizedDescription)
                     }
                 }
-            HStack{
-                Slider(value: self.$lowerPixelLimit, in: 0.0 ... 0.1){
-                    Text("Cut Off Luminosity")
-            }
-            }
-            HStack{
-                processedImage?.resizable().scaledToFit()
-            }
+
         }
     }
 
-        drawingView(redLayer: $insideData, blueLayer: $insideData)
-            .padding()
-            .aspectRatio(1, contentMode: .fit)
-            .drawingGroup()
-            .rotationEffect(.degrees(180))
-            .rotation3DEffect(.degrees(180), axis: (x: 0.0, y: 1.0, z: 0.0))
+
 
     }
 
-    }
+
     
 
     
