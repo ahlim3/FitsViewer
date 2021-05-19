@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4329A3E02654822200E63459 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4329A3DF2654822200E63459 /* Extension.swift */; };
+		4329A3E12654822200E63459 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4329A3DF2654822200E63459 /* Extension.swift */; };
+		4329A3E6265493D600E63459 /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4329A3E5265493D600E63459 /* DrawingView.swift */; };
+		4329A3E7265493D600E63459 /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4329A3E5265493D600E63459 /* DrawingView.swift */; };
 		43561128263BB27B00F638AF /* Stdev.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43561127263BB27B00F638AF /* Stdev.swift */; };
 		43561129263BB27B00F638AF /* Stdev.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43561127263BB27B00F638AF /* Stdev.swift */; };
 		435AD276262E98DA00280E5A /* Tests_iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435AD275262E98DA00280E5A /* Tests_iOS.swift */; };
@@ -41,6 +45,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4329A3DF2654822200E63459 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
+		4329A3E5265493D600E63459 /* DrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingView.swift; sourceTree = "<group>"; };
 		43561127263BB27B00F638AF /* Stdev.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stdev.swift; sourceTree = "<group>"; };
 		435AD25A262E98D900280E5A /* FitsViewerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FitsViewerApp.swift; sourceTree = "<group>"; };
 		435AD25B262E98D900280E5A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -119,6 +125,8 @@
 			children = (
 				435AD25A262E98D900280E5A /* FitsViewerApp.swift */,
 				435AD25B262E98D900280E5A /* ContentView.swift */,
+				4329A3DF2654822200E63459 /* Extension.swift */,
+				4329A3E5265493D600E63459 /* DrawingView.swift */,
 				43561127263BB27B00F638AF /* Stdev.swift */,
 				435AD25C262E98DA00280E5A /* Assets.xcassets */,
 			);
@@ -342,7 +350,9 @@
 			files = (
 				435AD285262E98DA00280E5A /* ContentView.swift in Sources */,
 				43561128263BB27B00F638AF /* Stdev.swift in Sources */,
+				4329A3E6265493D600E63459 /* DrawingView.swift in Sources */,
 				435AD283262E98DA00280E5A /* FitsViewerApp.swift in Sources */,
+				4329A3E02654822200E63459 /* Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -352,7 +362,9 @@
 			files = (
 				435AD286262E98DA00280E5A /* ContentView.swift in Sources */,
 				43561129263BB27B00F638AF /* Stdev.swift in Sources */,
+				4329A3E7265493D600E63459 /* DrawingView.swift in Sources */,
 				435AD284262E98DA00280E5A /* FitsViewerApp.swift in Sources */,
+				4329A3E12654822200E63459 /* Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

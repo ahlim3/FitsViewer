@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct FitsViewerApp: App {
+    @StateObject var fitsHandler = FITSHandler()
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(fitsHandler)
         }
     }
 }

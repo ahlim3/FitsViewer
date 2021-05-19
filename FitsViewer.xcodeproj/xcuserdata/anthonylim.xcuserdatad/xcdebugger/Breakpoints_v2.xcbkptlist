@@ -3,22 +3,4 @@
    uuid = "5B1C205A-195C-42EF-B06A-3E2BD23FD452"
    type = "1"
    version = "2.0">
-   <Breakpoints>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "38455F86-7045-4182-9455-A04EAD189F48"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "../../../../../var/folders/46/vg3xm2zd2rx5m8ykkydg9w8w0000gn/T/xcode/scm/FitsViewer/905f37a796d5ff6580737ff4ed26e82881e9da38/Shared/ContentView.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "44"
-            endingLineNumber = "44"
-            landmarkName = "read()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-   </Breakpoints>
 </Bucket>
