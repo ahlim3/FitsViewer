@@ -38,6 +38,9 @@ struct ContentView: View {
     @State var threeData: ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)?
     @State var xpoints = [Double]()
     @State var ypoints = [Double]()
+    @State var speed = 50.0
+    @State var isEditing = false
+    
     func display(Data: ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)) {
         let ImageInfo = returnInfo(ThreeData: threeData!)
         rawImage = Image(ImageInfo.1, scale: 2.0, label: Text("Raw"))
@@ -144,6 +147,18 @@ func returnInfo(ThreeData : ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)) -
                 .padding()
         }
         }
+        VStack {
+            Slider(
+                value: self.$fitsHandler.accuracyLow,
+                in: 0...0.1,
+                onEditingChanged: { editing in
+                    isEditing = editing
+                }
+            )
+            Text("\(fitsHandler.accuracyLow)")
+                .foregroundColor(isEditing ? .red : .blue)
+        }
+        
             VStack{
                 Button("Load", action: {
                     isImporting = false
