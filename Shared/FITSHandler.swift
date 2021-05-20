@@ -78,14 +78,14 @@ func returningCGImage(data: [Float], width: Int, height: Int, rowBytes: Int) -> 
         let width :Int = Int(buffer.width)
         let height: Int = Int(buffer.height)
         let rowBytes :Int = width*4
-        let histogramcount = 256
+        let histogramcount = 1024
         let histogramBin = histogram(dataMaxPixel: Pixel_F(data.max()!), dataMinPixel: Pixel_F(data.min()!), buffer: buffer, histogramcount: histogramcount)
         let histMax = Double(histogramBin.max()!)
         var xpointsinside = [Double]()
         var ypointsinside = [Double]()
         for i in 0 ..< histogramcount{
             xpointsinside.append(Double(i) / Double(histogramcount))
-            ypointsinside.append(Double(histogramBin[i])/histMax)
+            ypointsinside.append(log(Double(histogramBin[i])))
         }
         xpoints = xpointsinside
         ypoints = ypointsinside

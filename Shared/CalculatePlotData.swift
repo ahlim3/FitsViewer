@@ -15,12 +15,12 @@ class CalculatePlotData: ObservableObject {
     
     func plotHistogram(xpoint:[Double], ypoint:[Double]){
         //set the Plot Parameters
-        plotDataModel!.changingPlotParameters.yMax = 1.1
-        plotDataModel!.changingPlotParameters.yMin = -0.1
+        plotDataModel!.changingPlotParameters.yMax = 20.0
+        plotDataModel!.changingPlotParameters.yMin = -1.0
         plotDataModel!.changingPlotParameters.xMax = 1.1
         plotDataModel!.changingPlotParameters.xMin = -0.1
         plotDataModel!.changingPlotParameters.xLabel = "Brightness"
-        plotDataModel!.changingPlotParameters.yLabel = "count"
+        plotDataModel!.changingPlotParameters.yLabel = "Log(count)"
         plotDataModel!.changingPlotParameters.lineColor = .red()
         plotDataModel!.changingPlotParameters.title = "Histogram"
         

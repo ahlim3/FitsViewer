@@ -38,6 +38,9 @@ struct ContentView: View {
     @State var dataURL = URL(string: "")
     @State var isHidden = true
     @State var allHidden = false
+    @State var target : Image?
+    @State var Storedname = "ProcessedImage"
+
 
 
     func display(Data: ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)) {
@@ -136,6 +139,7 @@ struct ContentView: View {
                         
 
                 }
+                
                 if !isHidden{
                 Button("Implement Change", action: {self.clear(dataURL: dataURL!)})
                 }
