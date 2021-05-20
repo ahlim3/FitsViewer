@@ -11,43 +11,8 @@ import Accelerate.vImage
 
 
 class FITSHandler: ObservableObject{
-    var accuracyLow = 0.03
-    var accuracyHigh = 0.001
-    
-    func OptValue(histogram_in : [vImagePixelCount], histogramcount : Int) -> (Pixel_F, Pixel_F, Int){
-        var MaxPixel = 0
-        var MinPixel = 0
-        let PixelLimitingCount = Int(Double(histogram_in.reduce(0,+)) * accuracyLow)
-        let PixelLimitingCountHigh = Int(Double(histogram_in.reduce(0,+)) * accuracyHigh)
-        var minimumCutoff = 1
-        for i in 0 ..< histogramcount {
-            if histogram_in[i] > PixelLimitingCount{
-                MinPixel = i
-                break
-            }
-        }
-        if MinPixel > 20 {
-            MinPixel = MinPixel - 10
-        }
-        if MinPixel < 5 {
-            MinPixel = 1
-            minimumCutoff = 0
-        }
-        
-        for i in 0 ..< histogramcount{
-            if histogram_in[i] > PixelLimitingCountHigh{
-                MaxPixel = i
-            }
-            
-        }
-        //let difference = MaxPixel - MinPixel
-        //if difference < 30 {
-        //    MaxPixel = MinPixel + Int(Double(histogramcount) * 0.1)
-        //}
-        let MaxPixel_F = Pixel_F(Float(MaxPixel) / Float(histogramcount))
-        let MinPixel_F = Pixel_F(Float(MinPixel) / Float(histogramcount))
-        return (MaxPixel_F, MinPixel_F, minimumCutoff)
-    }
+    var MaxPixel_F = Pixel_F(1.00)
+    var MinPixel_F = Pixel_F(0.01)
     
 
 func histogram(dataMaxPixel: Pixel_F, dataMinPixel: Pixel_F, buffer : vImage_Buffer, histogramcount: Int) -> [vImagePixelCount]{
@@ -79,11 +44,18 @@ func returningCGImage(data: [Float], width: Int, height: Int, rowBytes: Int) -> 
 }
 
 
-func forcingMeanData(PixelData : [Float], MinimumLimit: Float) -> [Float]{
+    func forcingMeanData(PixelData : [Float], MinimumLimit: Float, MaximumLimit:Float) -> [Float]{
     var PixelData = PixelData
     for i in 0 ..< PixelData.count{
         if PixelData[i] < MinimumLimit{
             PixelData[i] = MinimumLimit
+        }
+    }
+    for i in 0 ..< PixelData.count{
+        if PixelData[i] > Float(0.9){
+            if PixelData[i] > Float(0.95) {
+                PixelData[i] = MaximumLimit
+            }
         }
     }
     return PixelData

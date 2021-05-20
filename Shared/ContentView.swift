@@ -34,21 +34,18 @@ struct ContentView: View {
     @State var Val: Bool = false
     @State var displayImage: Image?
     @State var ImageString = "Process Image"
-    @State var lowerPixelLimit = Pixel_F(0.0)
     @State var threeData: ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)?
     @State var xpoints = [Double]()
     @State var ypoints = [Double]()
-    @State var speed = 50.0
     @State var isEditing = false
+    @State var isEditing2 = false
     
     func display(Data: ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)) {
         let ImageInfo = returnInfo(ThreeData: threeData!)
         rawImage = Image(ImageInfo.1, scale: 2.0, label: Text("Raw"))
         processedImage = Image(ImageInfo.2, scale: 2.0, label: Text("Processed Image"))
         convolvedIamge = Image(ImageInfo.3, scale: 2.0, label: Text("Convolved Image"))
-        
     }
-
     func displaySwitch(switchVal: Bool) -> Bool {
         var Val = switchVal
         if Val == false
@@ -92,14 +89,14 @@ func returnInfo(ThreeData : ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)) -
     xpoints = xpointsinside
     ypoints = ypointsinside
     //Return three data, Histogram(0), Maximum Pixel Value(1), Minimum Pixel Value(2), Cutoff?(3) = 0 no, 1 yes
-    let OptimizedHistogramContents = fitsHandler.OptValue(histogram_in: histogramBin, histogramcount: histogramcount)
-    lowerPixelLimit = OptimizedHistogramContents.1
-    let upperPixelLimit = OptimizedHistogramContents.0
-    let cutoff = OptimizedHistogramContents.2
+    //let OptimizedHistogramContents = fitsHandler.OptValue(histogram_in: histogramBin, histogramcount: histogramcount)
+    let lowerPixelLimit = fitsHandler.MinPixel_F
+    let upperPixelLimit = fitsHandler.MaxPixel_F
+    //let cutoff = OptimizedHistogramContents.2
     let histogramOpt = fitsHandler.histogram(dataMaxPixel: upperPixelLimit, dataMinPixel: lowerPixelLimit, buffer: buffer, histogramcount: histogramcount)
     print(histogramOpt)
     var OriginalPixelData = (buffer.data.toArray(to: Float.self, capacity: Int(buffer.width*buffer.height)))
-    OriginalPixelData = fitsHandler.forcingMeanData(PixelData: OriginalPixelData, MinimumLimit: lowerPixelLimit)
+    OriginalPixelData = fitsHandler.forcingMeanData(PixelData: OriginalPixelData, MinimumLimit: lowerPixelLimit, MaximumLimit: upperPixelLimit)
     let forcedOriginalData = fitsHandler.returningCGImage(data: OriginalPixelData, width: width, height: height, rowBytes: rowBytes)
     var forcedbuffer = try! vImage_Buffer(cgImage: forcedOriginalData, format: format)
     var buffer3 = buffer
@@ -118,7 +115,7 @@ func returnInfo(ThreeData : ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)) -
     
     let bendvalue = fitsHandler.bendValue(AdjustedData: BlurredPixelData, lowerPixelLimit: lowerPixelLimit) //return bendvalue as .0, and averagepixeldata as .1
 
-    let ddpPixelData = fitsHandler.ddpProcessed(OriginalPixelData: OriginalPixelData, BlurredPixeldata: BlurredPixelData, Bendvalue: bendvalue.0, AveragePixel: bendvalue.1, cutOff: cutoff, MinPixel: lowerPixelLimit)
+    let ddpPixelData = fitsHandler.ddpProcessed(OriginalPixelData: OriginalPixelData, BlurredPixeldata: BlurredPixelData, Bendvalue: bendvalue.0, AveragePixel: bendvalue.1, MinPixel: lowerPixelLimit)
     let DDPScaled = fitsHandler.ddpScaled(ddpPixelData: ddpPixelData, MinPixel: lowerPixelLimit)
     let ConvolveImage = fitsHandler.returningCGImage(data: BlurredPixelData, width: width, height: height, rowBytes: rowBytes)
     let DDPwithScale = fitsHandler.returningCGImage(data: DDPScaled, width: width, height: height, rowBytes: rowBytes)
@@ -148,17 +145,32 @@ func returnInfo(ThreeData : ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)) -
         }
         }
         VStack {
-            Slider(
-                value: self.$fitsHandler.accuracyLow,
-                in: 0...0.1,
-                onEditingChanged: { editing in
-                    isEditing = editing
-                }
-            )
-            Text("\(fitsHandler.accuracyLow)")
-                .foregroundColor(isEditing ? .red : .blue)
+            HStack{
+                Slider(
+                    value: self.$fitsHandler.MaxPixel_F,
+                    in: 0.9...1.0,
+                    onEditingChanged: { editing in
+                        isEditing = editing
+                    }
+                )
+                Text("Maximum brightness control at \(fitsHandler.MaxPixel_F)")
+                    .foregroundColor(isEditing ? .red : .blue)
+            }
+            HStack{
+                Slider(
+                    value: self.$fitsHandler.MinPixel_F,
+                    in: 0...0.1,
+                    onEditingChanged: { editing in
+                        isEditing2 = editing
+                    }
+                )
+                Text("Minimum black pixel control at \(fitsHandler.MinPixel_F)")
+                    .foregroundColor(isEditing2 ? .red : .blue)
+            }
         }
-        
+        VStack{
+            Button("Set", action: {display(Data: threeData!)})
+        }
             VStack{
                 Button("Load", action: {
                     isImporting = false

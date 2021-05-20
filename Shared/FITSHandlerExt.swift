@@ -67,7 +67,7 @@ func bendValue(AdjustedData: [Float], lowerPixelLimit: Pixel_F) -> (Float, Float
     return (bendValue, averagePixelData)
 }
 
-func ddpProcessed(OriginalPixelData: [Float], BlurredPixeldata: [Float], Bendvalue : Float, AveragePixel: Float, cutOff: Int, MinPixel : Pixel_F) -> [Float]{
+func ddpProcessed(OriginalPixelData: [Float], BlurredPixeldata: [Float], Bendvalue : Float, AveragePixel: Float, MinPixel : Pixel_F) -> [Float]{
     var ddpPixeldata = [Float]()
         for i in 0 ..< OriginalPixelData.count{
         let answer = AveragePixel * ((OriginalPixelData[i]/(BlurredPixeldata[i] + Bendvalue)))
