@@ -30,133 +30,42 @@ struct ContentView: View {
     @State var isExporting: Bool = false
     @State var rawImage: Image?
     @State var processedImage: Image?
-    @State var convolvedIamge: Image?
-    @State var Val: Bool = false
-    @State var displayImage: Image?
-    @State var ImageString = "Process Image"
-    @State var threeData: ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)?
     @State var xpoints = [Double]()
     @State var ypoints = [Double]()
     @State var isEditing = false
     @State var isEditing2 = false
-    
+    @State var selectedTab = 0
+
+
     func display(Data: ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)) {
-        let ImageInfo = returnInfo(ThreeData: threeData!)
+        let ImageInfo = fitsHandler.returnInfo(ThreeData: fitsHandler.threeData!)
         rawImage = Image(ImageInfo.1, scale: 2.0, label: Text("Raw"))
         processedImage = Image(ImageInfo.2, scale: 2.0, label: Text("Processed Image"))
-        convolvedIamge = Image(ImageInfo.3, scale: 2.0, label: Text("Convolved Image"))
+        calcHistogram()
     }
-    func displaySwitch(switchVal: Bool) -> Bool {
-        var Val = switchVal
-        if Val == false
-        {
-            ImageString = "Process Image"
-            displayImage = processedImage
-            Val = true
-        }
-        if Val == true
-        {
-            ImageString = "Back to Raw Image"
-            displayImage = rawImage
-            Val = false
-        }
-        return Val
-    }
+
+
     
-
-
-func returnInfo(ThreeData : ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)) -> ([vImagePixelCount], CGImage, CGImage, CGImage){
-    let threedata = ThreeData
-    //target data
-    let data = threedata.0
-    //Buffer from FITS File
-    let buffer = threedata.1
-    //Grayscale format from FITS file
-    let format = threedata.2
-    //destination buffer
-    let width :Int = Int(buffer.width)
-    let height: Int = Int(buffer.height)
-    let rowBytes :Int = width*4
-    let histogramcount = 256
-    let histogramBin = fitsHandler.histogram(dataMaxPixel: Pixel_F(data.max()!), dataMinPixel: Pixel_F(data.min()!), buffer: buffer, histogramcount: histogramcount)
-    let histMax = Double(histogramBin.max()!)
-    var xpointsinside = [Double]()
-    var ypointsinside = [Double]()
-    for i in 0 ..< histogramcount{
-        xpointsinside.append(Double(i) / Double(histogramcount))
-        ypointsinside.append(Double(histogramBin[i])/histMax)
-    }
-    xpoints = xpointsinside
-    ypoints = ypointsinside
-    //Return three data, Histogram(0), Maximum Pixel Value(1), Minimum Pixel Value(2), Cutoff?(3) = 0 no, 1 yes
-    //let OptimizedHistogramContents = fitsHandler.OptValue(histogram_in: histogramBin, histogramcount: histogramcount)
-    let lowerPixelLimit = fitsHandler.MinPixel_F
-    let upperPixelLimit = fitsHandler.MaxPixel_F
-    //let cutoff = OptimizedHistogramContents.2
-    let histogramOpt = fitsHandler.histogram(dataMaxPixel: upperPixelLimit, dataMinPixel: lowerPixelLimit, buffer: buffer, histogramcount: histogramcount)
-    print(histogramOpt)
-    var OriginalPixelData = (buffer.data.toArray(to: Float.self, capacity: Int(buffer.width*buffer.height)))
-    OriginalPixelData = fitsHandler.forcingMeanData(PixelData: OriginalPixelData, MinimumLimit: lowerPixelLimit, MaximumLimit: upperPixelLimit)
-    let forcedOriginalData = fitsHandler.returningCGImage(data: OriginalPixelData, width: width, height: height, rowBytes: rowBytes)
-    var forcedbuffer = try! vImage_Buffer(cgImage: forcedOriginalData, format: format)
-    var buffer3 = buffer
-    var kernelwidth = 9
-    var kernelheight = 9
-    var A : Float = 1.0
-    var simgaX: Float = 0.75
-    var sigmaY: Float = 0.75
-    
-    var kernelArray = fitsHandler.kArray(width: kernelwidth, height: kernelheight, sigmaX: simgaX, sigmaY: sigmaY, A: A)
-    vImageConvolve_PlanarF(&forcedbuffer, &buffer3, nil, 0, 0, &kernelArray, UInt32(kernelwidth), UInt32(kernelheight), 0, vImage_Flags(kvImageEdgeExtend))
-
-    let BlurredPixelData = (buffer3.data.toArray(to: Float.self, capacity: Int(buffer3.width*buffer3.height)))
-    OriginalPixelData = (buffer.data.toArray(to: Float.self, capacity: Int(buffer.width*buffer.height)))
-    //Bendvalue of DDP
-    
-    let bendvalue = fitsHandler.bendValue(AdjustedData: BlurredPixelData, lowerPixelLimit: lowerPixelLimit) //return bendvalue as .0, and averagepixeldata as .1
-
-    let ddpPixelData = fitsHandler.ddpProcessed(OriginalPixelData: OriginalPixelData, BlurredPixeldata: BlurredPixelData, Bendvalue: bendvalue.0, AveragePixel: bendvalue.1, MinPixel: lowerPixelLimit)
-    let DDPScaled = fitsHandler.ddpScaled(ddpPixelData: ddpPixelData, MinPixel: lowerPixelLimit)
-    let ConvolveImage = fitsHandler.returningCGImage(data: BlurredPixelData, width: width, height: height, rowBytes: rowBytes)
-    let DDPwithScale = fitsHandler.returningCGImage(data: DDPScaled, width: width, height: height, rowBytes: rowBytes)
-    let originalImage = (try? buffer.createCGImage(format: format))!
-    calcHistogram()
-    print("called")
-    return(histogramBin, originalImage,  DDPwithScale, ConvolveImage)
-    }
     func calcHistogram(){
         dataCalculator.plotDataModel = self.plotDataModel
-        dataCalculator.plotHistogram(xpoint: xpoints, ypoint: ypoints)
+        dataCalculator.plotHistogram(xpoint: fitsHandler.xpoints, ypoint: fitsHandler.ypoints)
     }
 
 
     var body: some View {
-        TabView{
-        HStack{
-            processedImage?.resizable().scaledToFit()
-        }
-        HStack{
-            CorePlot(dataForPlot: $plotDataModel.plotData, changingPlotParameters: $plotDataModel.changingPlotParameters)
-                .setPlotPadding(left: 10)
-                .setPlotPadding(right: 10)
-                .setPlotPadding(top: 10)
-                .setPlotPadding(bottom: 10)
-                .padding()
-        }
-        }
         VStack {
             HStack{
                 Slider(
                     value: self.$fitsHandler.MaxPixel_F,
-                    in: 0.9...1.0,
+                    in: 0.11...1.0,
                     onEditingChanged: { editing in
                         isEditing = editing
                     }
                 )
-                Text("Maximum brightness control at \(fitsHandler.MaxPixel_F)")
+                .frame(width: 300, alignment: .center)
+                Text("Maximum Luminosity : \(fitsHandler.MaxPixel_F)")
                     .foregroundColor(isEditing ? .red : .blue)
-            }
-            HStack{
+                    .padding(CGFloat(20))
                 Slider(
                     value: self.$fitsHandler.MinPixel_F,
                     in: 0...0.1,
@@ -164,57 +73,92 @@ func returnInfo(ThreeData : ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)) -
                         isEditing2 = editing
                     }
                 )
-                Text("Minimum black pixel control at \(fitsHandler.MinPixel_F)")
+                .frame(width: 300, alignment: .center)
+                Text("Minimum Luminosity : \(fitsHandler.MinPixel_F)")
                     .foregroundColor(isEditing2 ? .red : .blue)
+                    .padding(CGFloat(20))
+                Button("Load", action: {
+                            isImporting = false
+                            //fix broken picker sheet
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                isImporting = true
+                            }
+                        })
+                        .fileImporter(
+                            isPresented: $isImporting,
+                            allowedContentTypes: [.fitDocument],
+                            allowsMultipleSelection: false
+                        ) { result in
+                            do {
+                                guard let selectedFile: URL = try result.get().first else { return }
+                                print("Selected file is", selectedFile)
+                                
+                                //trying to get access to url contents
+                                if (CFURLStartAccessingSecurityScopedResource(selectedFile as CFURL)) {
+                                                        
+                                    
+                                    guard let read_data = try! FitsFile.read(contentsOf: selectedFile) else { return }
+                                    let prime = read_data.prime
+                                    print(prime)
+                                    prime.v_complete(onError: {_ in
+                                        print("CGImage creation error")
+                                    }) { result in
+                                        fitsHandler.threeData = result
+                                        let _ = self.display(Data: fitsHandler.threeData!)
+                                    }
+                                    //done accessing the url
+                                    CFURLStopAccessingSecurityScopedResource(selectedFile as CFURL)
+                                }
+                                else {
+                                    print("Permission error!")
+                                }
+                            } catch {
+                                // Handle failure.
+                                print(error.localizedDescription)
+                            }
+                        
+
+                }
             }
         }
-        VStack{
-            Button("Set", action: {display(Data: threeData!)})
-        }
-            VStack{
-                Button("Load", action: {
-                    isImporting = false
-                    //fix broken picker sheet
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        isImporting = true
-                    }
-                })
-                .fileImporter(
-                    isPresented: $isImporting,
-                    allowedContentTypes: [.fitDocument],
-                    allowsMultipleSelection: false
-                ) { result in
-                    do {
-                        guard let selectedFile: URL = try result.get().first else { return }
-                        
-                        print("Selected file is", selectedFile)
-                        
-                        //trying to get access to url contents
-                        if (CFURLStartAccessingSecurityScopedResource(selectedFile as CFURL)) {
-                                                
-                            
-                            guard let read_data = try! FitsFile.read(contentsOf: selectedFile) else { return }
-                            let prime = read_data.prime
-                            print(prime)
-                            prime.v_complete(onError: {_ in
-                                print("CGImage creation error")
-                            }) { result in
-                                threeData = result
-                                let _ = self.display(Data: threeData!)
-                            }
-                            //done accessing the url
-                            CFURLStopAccessingSecurityScopedResource(selectedFile as CFURL)
-                        }
-                        else {
-                            print("Permission error!")
-                        }
-                    } catch {
-                        // Handle failure.
-                        print(error.localizedDescription)
-                    }
+        TabView(selection: $selectedTab){
+            rawImage?.resizable().scaledToFit()
+                .onTapGesture {
+                    self.selectedTab = 1
                 }
+                .tabItem{
+                    Image(systemName: "star")
+                    Text("Raw Image")
+                }
+                .tag(0)
+            processedImage?.resizable().scaledToFit()
+                .onTapGesture {
+                    self.selectedTab = 2
+                }
+                .tabItem{
+                    Image(systemName: "star")
+                    Text("Processed Image")
+                }
+                .tag(1)
+            CorePlot(dataForPlot: $plotDataModel.plotData, changingPlotParameters: $plotDataModel.changingPlotParameters)
+                .setPlotPadding(left: 10)
+                .setPlotPadding(right: 10)
+                .setPlotPadding(top: 10)
+                .setPlotPadding(bottom: 10)
+                .padding()
+                .onTapGesture {
+                    self.selectedTab = 3
+                }
+                .tabItem{
+                    Image(systemName: "star.fill")
+                    Text("Histogram")
+            }
+                .tag(2)
 
         }
+
+        
+
     }
 
 
