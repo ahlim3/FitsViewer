@@ -32,7 +32,7 @@ extension FITSHandler{
     for i in 0 ..< kernelArray.count{
         kernelArray[i] = kernelArray[i] / sum
     }
-        print(kernelArray)
+        //print(kernelArray)
     return kernelArray
     }
 

@@ -19,7 +19,7 @@ class CalculatePlotData: ObservableObject {
         plotDataModel!.changingPlotParameters.yMin = -0.1
         plotDataModel!.changingPlotParameters.xMax = 1.1
         plotDataModel!.changingPlotParameters.xMin = -0.1
-        plotDataModel!.changingPlotParameters.xLabel = "Luminosity"
+        plotDataModel!.changingPlotParameters.xLabel = "Brightness"
         plotDataModel!.changingPlotParameters.yLabel = "count"
         plotDataModel!.changingPlotParameters.lineColor = .red()
         plotDataModel!.changingPlotParameters.title = "Histogram"

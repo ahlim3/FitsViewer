@@ -35,48 +35,62 @@ struct ContentView: View {
     @State var isEditing = false
     @State var isEditing2 = false
     @State var selectedTab = 0
+    @State var dataURL = URL(string: "")
+    @State var isHidden = true
+    @State var allHidden = false
 
 
     func display(Data: ([FITSByte_F],vImage_Buffer,vImage_CGImageFormat)) {
-        let ImageInfo = fitsHandler.returnInfo(ThreeData: fitsHandler.threeData!)
+        let ImageInfo = fitsHandler.returnInfo(ThreeData: Data)
         rawImage = Image(ImageInfo.1, scale: 2.0, label: Text("Raw"))
         processedImage = Image(ImageInfo.2, scale: 2.0, label: Text("Processed Image"))
         calcHistogram()
+        isHidden = false
     }
-
-
     
     func calcHistogram(){
         dataCalculator.plotDataModel = self.plotDataModel
         dataCalculator.plotHistogram(xpoint: fitsHandler.xpoints, ypoint: fitsHandler.ypoints)
     }
+    func clear(dataURL : URL){
+        let read_data = try! FitsFile.read(contentsOf: dataURL)
+        let prime = read_data?.prime
+        prime?.v_complete(onError: {_ in
+            print("CGImage creation error")
+        }) { result in
+            fitsHandler.threeData = result
+            let _ = self.display(Data: fitsHandler.threeData!)
+        }
+    }
 
 
     var body: some View {
+        if !allHidden{
         VStack {
             HStack{
                 Slider(
                     value: self.$fitsHandler.MaxPixel_F,
-                    in: 0.11...1.0,
+                    in: 0.1...1.0,
                     onEditingChanged: { editing in
                         isEditing = editing
                     }
                 )
                 .frame(width: 300, alignment: .center)
-                Text("Maximum Luminosity : \(fitsHandler.MaxPixel_F)")
+                Text("Maximum Brightness : \(fitsHandler.MaxPixel_F)")
                     .foregroundColor(isEditing ? .red : .blue)
                     .padding(CGFloat(20))
                 Slider(
                     value: self.$fitsHandler.MinPixel_F,
-                    in: 0...0.1,
+                    in: 0...0.09,
                     onEditingChanged: { editing in
                         isEditing2 = editing
                     }
                 )
                 .frame(width: 300, alignment: .center)
-                Text("Minimum Luminosity : \(fitsHandler.MinPixel_F)")
+                Text("Minimum Brightness : \(fitsHandler.MinPixel_F)")
                     .foregroundColor(isEditing2 ? .red : .blue)
                     .padding(CGFloat(20))
+                
                 Button("Load", action: {
                             isImporting = false
                             //fix broken picker sheet
@@ -92,6 +106,8 @@ struct ContentView: View {
                             do {
                                 guard let selectedFile: URL = try result.get().first else { return }
                                 print("Selected file is", selectedFile)
+                                print(type(of: selectedFile))
+                                dataURL = selectedFile
                                 
                                 //trying to get access to url contents
                                 if (CFURLStartAccessingSecurityScopedResource(selectedFile as CFURL)) {
@@ -99,6 +115,7 @@ struct ContentView: View {
                                     
                                     guard let read_data = try! FitsFile.read(contentsOf: selectedFile) else { return }
                                     let prime = read_data.prime
+                                    print(type(of: prime))
                                     print(prime)
                                     prime.v_complete(onError: {_ in
                                         print("CGImage creation error")
@@ -119,8 +136,15 @@ struct ContentView: View {
                         
 
                 }
-            }
+                if !isHidden{
+                Button("Implement Change", action: {self.clear(dataURL: dataURL!)})
+                }
+
+                }
+
         }
+        }
+        Toggle("Hide Controller", isOn: $allHidden)
         TabView(selection: $selectedTab){
             rawImage?.resizable().scaledToFit()
                 .onTapGesture {

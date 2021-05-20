@@ -19,8 +19,6 @@
 		432621DD2654BF9B00BA928D /* CorePlot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432621DB2654BF9B00BA928D /* CorePlot.swift */; };
 		4329A3E02654822200E63459 /* FITSHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4329A3DF2654822200E63459 /* FITSHandler.swift */; };
 		4329A3E12654822200E63459 /* FITSHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4329A3DF2654822200E63459 /* FITSHandler.swift */; };
-		434356152655880C00B5B26B /* ImageDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 434356142655880C00B5B26B /* ImageDisplay.swift */; };
-		434356162655880C00B5B26B /* ImageDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 434356142655880C00B5B26B /* ImageDisplay.swift */; };
 		43561128263BB27B00F638AF /* Stdev.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43561127263BB27B00F638AF /* Stdev.swift */; };
 		43561129263BB27B00F638AF /* Stdev.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43561127263BB27B00F638AF /* Stdev.swift */; };
 		435AD276262E98DA00280E5A /* Tests_iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435AD275262E98DA00280E5A /* Tests_iOS.swift */; };
@@ -62,7 +60,6 @@
 		432621D42654BDD900BA928D /* PlotDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlotDataClass.swift; sourceTree = "<group>"; };
 		432621DB2654BF9B00BA928D /* CorePlot.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CorePlot.swift; sourceTree = "<group>"; };
 		4329A3DF2654822200E63459 /* FITSHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FITSHandler.swift; sourceTree = "<group>"; };
-		434356142655880C00B5B26B /* ImageDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDisplay.swift; sourceTree = "<group>"; };
 		43561127263BB27B00F638AF /* Stdev.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stdev.swift; sourceTree = "<group>"; };
 		435AD25A262E98D900280E5A /* FitsViewerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FitsViewerApp.swift; sourceTree = "<group>"; };
 		435AD25B262E98D900280E5A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -146,7 +143,6 @@
 				435AD25B262E98D900280E5A /* ContentView.swift */,
 				4329A3DF2654822200E63459 /* FITSHandler.swift */,
 				43C4814C265593BB00BA0D25 /* FITSHandlerExt.swift */,
-				434356142655880C00B5B26B /* ImageDisplay.swift */,
 				43561127263BB27B00F638AF /* Stdev.swift */,
 				432621D32654BDD900BA928D /* CalculatePlotData.swift */,
 				432621D22654BDD900BA928D /* ChangingPlotParameters.swift */,
@@ -381,7 +377,6 @@
 				432621DC2654BF9B00BA928D /* CorePlot.swift in Sources */,
 				435AD283262E98DA00280E5A /* FitsViewerApp.swift in Sources */,
 				432621D72654BDD900BA928D /* CalculatePlotData.swift in Sources */,
-				434356152655880C00B5B26B /* ImageDisplay.swift in Sources */,
 				432621D92654BDD900BA928D /* PlotDataClass.swift in Sources */,
 				4329A3E02654822200E63459 /* FITSHandler.swift in Sources */,
 				432621D52654BDD900BA928D /* ChangingPlotParameters.swift in Sources */,
@@ -398,7 +393,6 @@
 				432621DD2654BF9B00BA928D /* CorePlot.swift in Sources */,
 				435AD284262E98DA00280E5A /* FitsViewerApp.swift in Sources */,
 				432621D82654BDD900BA928D /* CalculatePlotData.swift in Sources */,
-				434356162655880C00B5B26B /* ImageDisplay.swift in Sources */,
 				432621DA2654BDD900BA928D /* PlotDataClass.swift in Sources */,
 				4329A3E12654822200E63459 /* FITSHandler.swift in Sources */,
 				432621D62654BDD900BA928D /* ChangingPlotParameters.swift in Sources */,

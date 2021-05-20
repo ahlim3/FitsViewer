@@ -81,14 +81,14 @@ public struct CorePlot: ViewRepresentable {
         let axisSet = newGraph.axisSet as! CPTXYAxisSet
 
         if let x = axisSet.xAxis {
-            x.majorIntervalLength   = 10.0
+            x.majorIntervalLength   = 0.1
             x.orthogonalPosition    = 0.0
-            x.minorTicksPerInterval = 10
+            x.minorTicksPerInterval = 1
         }
 
         if let y = axisSet.yAxis {
-            y.majorIntervalLength   = 100.0
-            y.minorTicksPerInterval = 10
+            y.majorIntervalLength   = 0.1
+            y.minorTicksPerInterval = 1
             y.orthogonalPosition    = 0.0
             y.delegate = context.coordinator
         }

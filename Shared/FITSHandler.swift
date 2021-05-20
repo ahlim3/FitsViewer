@@ -92,7 +92,7 @@ func returningCGImage(data: [Float], width: Int, height: Int, rowBytes: Int) -> 
         let lowerPixelLimit = MinPixel_F
         let upperPixelLimit = MaxPixel_F
         let histogramOpt = histogram(dataMaxPixel: upperPixelLimit, dataMinPixel: lowerPixelLimit, buffer: buffer, histogramcount: histogramcount)
-        print(histogramOpt)
+        //print(histogramOpt)
         var OriginalPixelData = (buffer.data.toArray(to: Float.self, capacity: Int(buffer.width*buffer.height)))
         OriginalPixelData = forcingMeanData(PixelData: OriginalPixelData, MinimumLimit: lowerPixelLimit, MaximumLimit: upperPixelLimit)
         let forcedOriginalData = returningCGImage(data: OriginalPixelData, width: width, height: height, rowBytes: rowBytes)
