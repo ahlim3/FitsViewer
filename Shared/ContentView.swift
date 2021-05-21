@@ -124,7 +124,7 @@ struct ContentView: View {
                 Text("Min B")
                 Slider(
                     value: self.$fitsHandler.MinPixel_F,
-                    in: 0...0.20,
+                    in: 0...0.25,
                     onEditingChanged: { editing in
                         isEditing2 = editing
                     }
