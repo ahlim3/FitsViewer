@@ -68,29 +68,69 @@ struct ContentView: View {
 
 
     var body: some View {
+        TabView(selection: $selectedTab){
+            rawImage?.resizable().scaledToFit()
+                .onTapGesture {
+                    self.selectedTab = 1
+                }
+                .tabItem{
+                    Image(systemName: "star")
+                    Text("Raw Image")
+                }
+                .tag(0)
+            processedImage?.resizable().scaledToFit()
+                .onTapGesture {
+                    self.selectedTab = 2
+                }
+                .tabItem{
+                    Image(systemName: "star")
+                    Text("Processed Image")
+                }
+                .tag(1)
+            CorePlot(dataForPlot: $plotDataModel.plotData, changingPlotParameters: $plotDataModel.changingPlotParameters)
+                .setPlotPadding(left: 10)
+                .setPlotPadding(right: 10)
+                .setPlotPadding(top: 10)
+                .setPlotPadding(bottom: 10)
+                .padding()
+                .onTapGesture {
+                    self.selectedTab = 3
+                }
+                .tabItem{
+                    Image(systemName: "star.fill")
+                    Text("Histogram")
+            }
+                .tag(2)
+
+        }
+        Toggle("Hide Controller", isOn: $allHidden)
         if !allHidden{
-        VStack {
+        HStack {
             HStack{
+                
+                Text("Max B")
                 Slider(
                     value: self.$fitsHandler.MaxPixel_F,
-                    in: 0.1...1.0,
+                    in: 0.5...1.0,
                     onEditingChanged: { editing in
                         isEditing = editing
                     }
                 )
                 .frame(width: 300, alignment: .center)
-                Text("Maximum Brightness : \(fitsHandler.MaxPixel_F)")
+                Text("\(fitsHandler.MaxPixel_F)")
                     .foregroundColor(isEditing ? .red : .blue)
                     .padding(CGFloat(20))
+                
+                Text("Min B")
                 Slider(
                     value: self.$fitsHandler.MinPixel_F,
-                    in: 0...0.09,
+                    in: 0...0.20,
                     onEditingChanged: { editing in
                         isEditing2 = editing
                     }
                 )
                 .frame(width: 300, alignment: .center)
-                Text("Minimum Brightness : \(fitsHandler.MinPixel_F)")
+                Text("\(fitsHandler.MinPixel_F)")
                     .foregroundColor(isEditing2 ? .red : .blue)
                     .padding(CGFloat(20))
                 
@@ -141,48 +181,14 @@ struct ContentView: View {
                 }
                 
                 if !isHidden{
-                Button("Implement Change", action: {self.clear(dataURL: dataURL!)})
+                    Button("Implement Change", action: {self.clear(dataURL: dataURL!)})
                 }
 
                 }
 
         }
+        .frame(minWidth: /*@START_MENU_TOKEN@*/0/*@END_MENU_TOKEN@*/, idealWidth: 100, maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/, minHeight: /*@START_MENU_TOKEN@*/0/*@END_MENU_TOKEN@*/, idealHeight: 25, maxHeight: 25, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
         }
-        Toggle("Hide Controller", isOn: $allHidden)
-        TabView(selection: $selectedTab){
-            rawImage?.resizable().scaledToFit()
-                .onTapGesture {
-                    self.selectedTab = 1
-                }
-                .tabItem{
-                    Image(systemName: "star")
-                    Text("Raw Image")
-                }
-                .tag(0)
-            processedImage?.resizable().scaledToFit()
-                .onTapGesture {
-                    self.selectedTab = 2
-                }
-                .tabItem{
-                    Image(systemName: "star")
-                    Text("Processed Image")
-                }
-                .tag(1)
-            CorePlot(dataForPlot: $plotDataModel.plotData, changingPlotParameters: $plotDataModel.changingPlotParameters)
-                .setPlotPadding(left: 10)
-                .setPlotPadding(right: 10)
-                .setPlotPadding(top: 10)
-                .setPlotPadding(bottom: 10)
-                .padding()
-                .onTapGesture {
-                    self.selectedTab = 3
-                }
-                .tabItem{
-                    Image(systemName: "star.fill")
-                    Text("Histogram")
-            }
-                .tag(2)
-
         }
 
         
@@ -191,7 +197,6 @@ struct ContentView: View {
 
 
 
-    }
 
 
     
