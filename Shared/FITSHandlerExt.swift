@@ -10,14 +10,13 @@ import Accelerate
 import Accelerate.vImage
 
 extension FITSHandler{
-    //DDP Process functions
+    ///DDP Process functions
     
     func kArray(width: Int, height: Int, sigmaX: Float, sigmaY: Float, A: Float) -> [Float]
     {
     let kernelwidth = width
     let kernelheight = height
     var kernelArray = [Float]()
-    //var Volume = 2.0 * Float.pi * A * simgaX * sigmaY
     for i in 0 ..< kernelwidth{
         let xposition = Float(i - kernelwidth / 2)
         for j in 0 ..< kernelheight{
@@ -32,7 +31,6 @@ extension FITSHandler{
     for i in 0 ..< kernelArray.count{
         kernelArray[i] = kernelArray[i] / sum
     }
-        //print(kernelArray)
     return kernelArray
     }
 
